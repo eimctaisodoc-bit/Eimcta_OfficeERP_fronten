@@ -1,128 +1,226 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
-    Users, FileText, CalendarCheck, CreditCard, ClipboardList,
-    FileSignature, Rocket, Map, Briefcase, Wrench,
-    Eye, Activity, CheckCircle, ChevronLeftCircle, ChevronRightCircle,
-    PlusCircle
-} from "lucide-react";
+    Users,
+    Sparkles,
+    Plus,
+    FileText,
+    Handshake,
+    CreditCard,
+    ClipboardCheck,
+    FileSignature,
+    UserCheck,
+    MapPinned,
+    Route,
+    ClipboardEdit,
+    Settings,
+    Eye,
+    ListChecks,
+    CheckCircle2,
 
-export const Pipelines = [
-    { title: "Lead Gen", icon: Users, step: 1, },
-    { title: "Proposal", icon: FileText, step: 2, },
-    { title: "Meeting", icon: CalendarCheck, step: 3, },
-    { title: "50% Advance", icon: CreditCard, step: 4, },
-    { title: "CIS & PCCCF", icon: ClipboardList, step: 5, },
-    { title: "Contract", icon: FileSignature, step: 6, },
-    { title: "Deployment", icon: Rocket, step: 7, },
-    { title: "Roadmap", icon: Map, step: 8, },
-    { title: "Job Card", icon: Briefcase, step: 9, },
-    { title: "Service", icon: Wrench, step: 10, },
-    { title: "Observation", icon: Eye, step: 11, },
-    { title: "Tracking", icon: Activity, step: 12, },
-    { title: "Closure", icon: CheckCircle, step: 13, },
+    PlusCircle,
+
+
+} from "lucide-react";
+import LeadForm from "./leadForm";
+import HelperSalesPipeline from "./helper";
+import { SmallModal } from "./innerHelper/lead";
+
+/* -------------------- ISO STAGES -------------------- */
+
+export const STAGES = [
+    { title: "Lead ", name: "Lead", icon: Users, step: 1 },
+    { title: " Proposal", name: "Proposal", icon: FileText, step: 2 },
+    { title: "Meeting", name: "Meeting", icon: Handshake, step: 3 },
+    { title: "50% Retention", name: "50% Retention", icon: CreditCard, step: 4 },
+    { title: "CIS & PCCCF", name: "CIS & PCCCF", icon: ClipboardCheck, step: 5 },
+    { title: " Contract", name: "Contract", icon: FileSignature, step: 6 },
+    { title: "Consultant", name: "Consultant", icon: UserCheck, step: 7 },
+    { title: "Deployment", name: "Deployment", icon: MapPinned, step: 8 },
+    { title: "Road Map", name: "Road Map", icon: Route, step: 9 },
+    { title: "Job Card", name: "Job Card", icon: ClipboardEdit, step: 10 },
+    { title: "Service", name: "Service", icon: Settings, step: 11 },
+    { title: "Observation", name: "Observation", icon: Eye, step: 12 },
+    { title: "Traking", name: "Traking", icon: ListChecks, step: 13 },
+    { title: "Closure", name: "Closure", icon: CheckCircle2, step: 14 },
 ];
+/* -------------------- INDIVIDUAL PIPELINE -------------------- */
+
+
+/* -------------------- MAIN COMPONENT -------------------- */
 
 export const SalesPipeline = () => {
-    const scrollRef = useRef(null);
-    // Track current step to demonstrate functionality
 
-    const [currentStep, setCurrentStep] = useState(1);
+    const [showLeadForm, setShowLeadForm] = useState(false);
+    const [isStage, setStage] = useState(false)
+    const [activeIndex, setActiveIndex] = useState(null);
 
-    const scroll = (direction) => {
-        if (scrollRef.current) {
-            const { scrollLeft, clientWidth } = scrollRef.current;
-            const scrollTo = direction === 'left'
-                ? scrollLeft - 200
-                : scrollLeft + 200;
-            scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
-        }
-    };
+    const handleClose = () => {
 
-    const getStatusStyles = (step) => {
-        if (step < currentStep) return "border-green-500 bg-green-50 text-green-600";
-        if (step === currentStep) return "border-blue-600 bg-blue-600 text-white shadow-lg shadow-blue-200";
-        return "border-slate-200 bg-white text-slate-400";
-    };
+        setShowLeadForm(false);
+        // setActiveIndex((prev) => (prev === index ? null : index));
+    }
+    const handleClick = (id) => {
 
+        setStage(true)
+        console.log(id)
+        // alert(id)
+    }
+    // localStorage.getItem('newLead') && console.log('New Lead Data from Local Storage:', JSON.parse(localStorage.getItem('newLead')));
     return (
-        <div className="w-full gap-3 flex justify-end flex-col max-w-7xl  px-4 py-8 shadow bg-white rounded-2xl border-slate-100">
-            <div className="w-full  bg-transparent flex justify-end p-3">
-                <div className="flex items-center text-white p-3 w-fit rounded-2xl cursor-pointer gap-2 bg-amber-500">
-                    Add Pipeline
-                    <button type="button">
-                        <PlusCircle size={25} />
-                    </button>
-                </div>
-            </div>
+        <div
+            className="min-h-screen bg-white p-6 md:p-16 antialiased text-slate-900"
+            style={{ fontFamily: "'Roboto Slab', serif" }}
+        >
+            <div className="max-w-7xl mx-auto">
 
-            <div className="relative flex items-center  ">
+                <header className="flex flex-col md:flex-row justify-between items-center mb-16 gap-8">
+                    <div className="text-center md:text-left">
+                        <div className="flex items-center justify-center md:justify-start gap-3 mb-3">
+                            <div className="p-2 bg-amber-100 rounded-lg">
+                                <Sparkles className="text-orange-600" size={20} />
+                            </div>
+                            <span className="text-xs font-black text-orange-700 uppercase tracking-[0.3em]">
+                                ISO Management Portal
+                            </span>
+                        </div>
+                        <h1 className="text-5xl font-black text-slate-900 tracking-wide  leading-none">
+                            Sales <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-600">Pipeline</span>
+                        </h1>
+                        <p className="text-slate-400 mt-3 text-lg font-light">Monitor certification lifecycles and revenue milestones</p>
+                    </div>
 
-                {/* Left Navigation */}
-                <button
-                    onClick={() => scroll('left')}
-                    className="p-2 text-slate-400 hover:text-blue-600 transition-colors z-10 bg-white rounded-full"
-                >
-                    <ChevronLeftCircle size={28} />
-                </button>
 
-                {/* Pipeline Container */}
-                <div
-                    ref={scrollRef}
-                    className="flex flex-1 gap-0 overflow-x-auto no-scrollbar scroll-smooth items-center px-4"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                >
-                    {Pipelines.map((pipeline, index) => {
-                        const Icon = pipeline.icon;
-                        const statusClass = getStatusStyles(pipeline.step);
-                        const isLast = index === Pipelines.length - 1;
 
-                        return (
-                            <div key={pipeline.step} className="flex items-center flex-shrink-0 group">
-                                <div
-                                    onClick={() => setCurrentStep(pipeline.step)}
-                                    className="flex flex-col items-center cursor-pointer transition-all duration-300 transform group-hover:scale-105"
-                                >
-                                    {/* Icon Circle */}
-                                    <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center mb-2 transition-colors ${statusClass}`}>
-                                        <Icon size={20} />
+
+
+                </header>
+
+                {/* pipeline selector */}
+
+                {/* symmetrical grid for stages */}
+                <div className="flex flex-row gap-14 overflow-x-auto py-4 custom-scrollbar cursor-grab">
+                    {STAGES.map((stage) => (
+                        <div key={`stage-${stage.step}`} className="flex flex-col min-w-[320px] justify-start items-start">
+
+                            {/* header section */}
+                            <div className="flex w-full items-center gap-6 py-3 border-b border-slate-200 last:border-0">
+                                <div className="relative">
+                                    <div className="flex bg-amber-100/50 rounded-full items-center justify-center w-12 h-12 ring-4 ring-amber-50/50">
+                                        <stage.icon className="text-amber-600" size={22} />
                                     </div>
-
-                                    {/* Label */}
-                                    <span className={`text-xs font-semibold whitespace-nowrap px-2 ${pipeline.step === currentStep ? 'text-blue-600' : 'text-slate-500'}`}>
-                                        {pipeline.title}
-                                    </span>
-
-                                    {/* Status Indicator */}
-                                    <span className={`text-[10px] uppercase tracking-wider font-bold mt-1 ${pipeline.step < currentStep ? 'text-green-500' : pipeline.step === currentStep ? 'text-blue-500' : 'text-slate-300'}`}>
-                                        {pipeline.step < currentStep ? 'Done' : pipeline.step === currentStep ? 'Active' : 'Pending'}
-                                    </span>
                                 </div>
 
-                                {/* Connector Line */}
-                                {!isLast && (
-                                    <div className={`h-[2px] w-12 mx-2 mb-8 transition-colors ${pipeline.step < currentStep ? 'bg-green-400' : 'bg-slate-100'}`} />
+                                <div className="flex-grow flex flex-row gap-6 items-center justify-between">
+                                    <h2 className="text-md font-semibold text-slate-700">
+                                        {stage.title}
+                                    </h2>
+
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 font-semibold text-amber-600">
+                                        4
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* content area that can grow */}
+                            <div className="mt-7 flex flex-col w-full items-center justify-center rounded-lg border-2 border-dashed
+                    border-slate-200 p-3 text-amber-500 transition-all hover:border-amber-200 h-auto">
+
+                                {stage.name === "Lead" ? (
+                                    <>
+                                        <div className="flex flex-col gap-4 w-full pb-4">
+                                            {
+                                                stage.step === 1 && (<SmallModal />)
+                                            }
+                                            {/* {Array.from({ length: Number(2) || 0 }).map((_, i) => {
+                                                // const box = getBoxData(i + 1);
+                                                // console.log(i)
+                                                return <SmallModal key={i} data={i} />;
+                                            })} */}
+                                        </div>
+
+                                        <div className="flex w-full flex-row rounded-lg text-center hover:border-amber-300 
+                                hover:bg-amber-50/30 transition-all duration-200 align-middle gap-2 cursor-pointer 
+                                justify-center border-2 border-dashed border-slate-200 p-4 items-center group"
+                                            onClick={() => setShowLeadForm(true)}>
+                                            <PlusCircle size={22} className="text-amber-400 group-hover:text-amber-500 transition-colors" />
+                                            <span className="font-medium text-slate-600 group-hover:text-amber-600 transition-colors">
+                                                Add New Lead
+                                            </span>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="flex flex-col gap-4 w-full">
+                                            {
+                                                stage.step === 2 && (<>
+                                                    {
+                                                        Array.from({ length: 3 }).map((_, idx) => {
+                                                            // if(idx===0) return
+                                                            return (
+                                                                // <div>this is {idx}{_}</div>
+                                                                <SmallModal key={`${idx} lead`} data={idx} onClick={() => handleClick(idx)} />
+
+                                                            )
+                                                        })
+                                                    }
+
+                                                </>)
+                                            }
+                                            {
+                                                stage.step === 5 && (<>
+                                                    {
+                                                        Array.from({ length: 2 }).map((_, idx) => {
+                                                            // if(idx===0) return
+                                                            return (
+                                                                // <div>this is {idx}{_}</div>
+                                                                <SmallModal key={`${idx} lead`} data={idx} onClick={() => handleClick(idx)} />
+
+                                                            )
+                                                        })
+                                                    }
+
+                                                </>)
+                                            }
+                                            {
+                                                stage.step === 6 && (<>
+                                                    {
+                                                        Array.from({ length: 1 }).map((_, idx) => {
+                                                            // if(idx===0) return
+                                                            return (
+                                                                // <div>this is {idx}{_}</div>
+                                                                <SmallModal key={`${idx} lead`} data={idx} onClick={() => handleClick(idx)} />
+
+                                                            )
+                                                        })
+                                                    }
+
+                                                </>)
+                                            }
+                                           
+
+
+                                        </div>
+                                    </>
                                 )}
                             </div>
-                        );
-                    })}
+                        </div>
+                    ))}
                 </div>
 
-                {/* Right Navigation */}
-                <button
-                    onClick={() => scroll('right')}
-                    className="p-2 text-slate-400 hover:text-blue-600 transition-colors z-10 bg-white rounded-full"
-                >
-                    <ChevronRightCircle size={28} />
-                </button>
-            </div>
 
-            {/* Legend/Context (Optional) */}
-            <div className="mt-4 flex justify-end gap-4 text-xs text-slate-400">
-                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-500" /> Completed</div>
-                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-600" /> Active</div>
-                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-slate-200" /> Upcoming</div>
             </div>
-            <hr />
+            {
+                showLeadForm && <LeadForm onClose={handleClose} />
+            }
+            <HelperSalesPipeline isStage={isStage} setStage={setStage} />
         </div>
     );
 };
+
+
+
+
+
+
+
+

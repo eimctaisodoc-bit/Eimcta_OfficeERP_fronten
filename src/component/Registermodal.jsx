@@ -30,9 +30,7 @@ const initialStaffState = {
   position: "",
   personalEmail: "",
   personalPhone: "",
-  jobRole: "",
   employee_id: "",
-  phone: "",
   password: "",
   confirmPassword: "",
 };
@@ -48,15 +46,13 @@ const initialClientState = {
 // --------------------- Staff Form ---------------------
 const StaffForm = ({
   staffData,
-  formErrors,
-  touchedFields,
-  onBlur,
   onSelectChange,
   onInputChange,
   roleOptions,
-  positionOptions,
   firstNameOptions,
   customSelectStyles,
+  onSubmit,
+  loading,
 }) => {
   return (
     <>
@@ -69,20 +65,13 @@ const StaffForm = ({
           options={firstNameOptions}
           value={firstNameOptions?.find((opt) => opt.value === staffData.fullName)}
           onChange={(selected) => onSelectChange(selected, "fullName", "staff")}
-          onBlur={() => onBlur("fullName", "staff")}
           className="react-select-container"
           classNamePrefix="select"
           placeholder="Select employee full name..."
           isClearable
           isSearchable
-          styles={customSelectStyles(formErrors, "fullName")}
+          styles={customSelectStyles}
         />
-        {formErrors.fullName && touchedFields.fullName && (
-          <p className="text-xs text-red-600 font-medium flex items-center gap-1">
-            <CircleAlert size={12} />
-            {formErrors.fullName}
-          </p>
-        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-5">
@@ -100,7 +89,9 @@ const StaffForm = ({
               name="userName"
               value={staffData.userName}
               readOnly
-              className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium bg-slate-50 text-slate-600 cursor-not-allowed"
+              className="w-full py-3.5 pl-12 pr-4 rounded-xl border
+               border-slate-300 outline-none text-sm font-medium
+                bg-slate-50 text-slate-600 cursor-not-allowed"
               placeholder="Auto-filled from Full Name selection"
             />
           </div>
@@ -115,18 +106,11 @@ const StaffForm = ({
             options={roleOptions}
             value={roleOptions.find((opt) => opt.value === staffData.role)}
             onChange={(selected) => onSelectChange(selected, "role", "staff")}
-            onBlur={() => onBlur("role", "staff")}
             className="react-select-container"
             classNamePrefix="select"
             placeholder="Select a role..."
-            styles={customSelectStyles(formErrors, "role")}
+            styles={customSelectStyles}
           />
-          {formErrors.role && touchedFields.role && (
-            <p className="text-xs text-red-600 font-medium flex items-center gap-1">
-              <CircleAlert size={12} />
-              {formErrors.role}
-            </p>
-          )}
         </div>
       </div>
 
@@ -135,62 +119,38 @@ const StaffForm = ({
         <label className="block text-sm font-semibold text-slate-700 flex items-center gap-1">
           Position <span className="text-red-500">*</span>
         </label>
-        <Select
-          options={positionOptions}
-          value={positionOptions.find((opt) => opt.value === staffData.position)}
-          onChange={(selected) => onSelectChange(selected, "position", "staff")}
-          onBlur={() => onBlur("position", "staff")}
-          className="react-select-container"
-          classNamePrefix="select"
-          placeholder="Select a position..."
-          styles={customSelectStyles(formErrors, "position")}
-        />
-        {formErrors.position && touchedFields.position && (
-          <p className="text-xs text-red-600 font-medium flex items-center gap-1">
-            <CircleAlert size={12} />
-            {formErrors.position}
-          </p>
-        )}
+        <div className="relative">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+            <User size={20} />
+          </div>
+          <input
+            type="text"
+            name="position"
+            value={staffData.position}
+            readOnly
+            className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium bg-slate-50 text-slate-600 cursor-not-allowed"
+            placeholder="Auto Filled from Full Name selection"
+          />
+        </div>
       </div>
 
-      {/* Personal Email & Job Role */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-5">
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-slate-700 flex items-center gap-1">
-            Personal Email
-          </label>
-          <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-              <Mail size={20} />
-            </div>
-            <input
-              type="email"
-              name="personalEmail"
-              value={staffData.personalEmail || ""}
-              readOnly
-              className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium bg-slate-50 text-slate-600 cursor-not-allowed"
-              placeholder="Auto-filled from selection"
-            />
+      {/* Personal Email */}
+      <div className="space-y-2">
+        <label className="block text-sm font-semibold text-slate-700 flex items-center gap-1">
+          Personal Email
+        </label>
+        <div className="relative">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+            <Mail size={20} />
           </div>
-        </div>
-
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-slate-700 flex items-center gap-1">
-            Job Role
-          </label>
-          <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-              <User size={20} />
-            </div>
-            <input
-              type="text"
-              name="jobRole"
-              value={staffData.jobRole || ""}
-              readOnly
-              className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium bg-slate-50 text-slate-600 cursor-not-allowed"
-              placeholder="Auto-filled from selection"
-            />
-          </div>
+          <input
+            type="email"
+            name="personalEmail"
+            value={staffData.personalEmail || ""}
+            readOnly
+            className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium bg-slate-50 text-slate-600 cursor-not-allowed"
+            placeholder="Auto-filled from selection"
+          />
         </div>
       </div>
 
@@ -213,6 +173,75 @@ const StaffForm = ({
           />
         </div>
       </div>
+
+      {/* Password fields */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-slate-700">
+            Password <span className="text-red-500">*</span>
+          </label>
+          <div className="relative">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+              <Lock size={20} />
+            </div>
+            <input
+              type="password"
+              name="password"
+              value={staffData.password}
+              readOnly
+              onChange={(e) => onInputChange(e, "staff")}
+              className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium bg-white"
+              placeholder="Enter password"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-slate-700">
+            Confirm Password <span className="text-red-500">*</span>
+          </label>
+          <div className="relative">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+              <Lock size={20} />
+            </div>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={staffData.password}
+              readOnly
+              onChange={(e) => onInputChange(e, "staff")}
+              className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium bg-slate-50 text-slate-600 cursor-not-allowed"
+              placeholder="Confirm password"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Submit */}
+      <div className="pt-2">
+        <button
+          type="submit"
+          onClick={onSubmit}
+          disabled={loading}
+          className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-4 px-4 text-base rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg hover:shadow-xl active:shadow-md group font-['Roboto_Slab']"
+        >
+          {loading ? (
+            <span className="flex items-center justify-center">
+              <Loader2 className="w-5 h-5 mr-3 animate-spin" />
+              Registering...
+            </span>
+          ) : (
+            <span className="flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+              Create Account
+              <ChevronRight className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform duration-300" />
+            </span>
+          )}
+        </button>
+        <p className="text-slate-500 text-xs text-center mt-3 flex items-center justify-center gap-1">
+          <Lock className="w-3 h-3 flex-shrink-0" />
+          Your data is securely encrypted
+        </p>
+      </div>
     </>
   );
 };
@@ -220,10 +249,9 @@ const StaffForm = ({
 // --------------------- Client Form ---------------------
 const ClientForm = ({
   clientData,
-  formErrors,
-  touchedFields,
-  onBlur,
   onInputChange,
+  onSubmit,
+  loading,
 }) => {
   return (
     <>
@@ -241,22 +269,10 @@ const ClientForm = ({
             name="organizationName"
             value={clientData.organizationName}
             onChange={(e) => onInputChange(e, "client")}
-            onBlur={() => onBlur("organizationName", "client")}
-            className={`w-full py-3.5 pl-12 pr-4 rounded-xl border outline-none text-sm font-medium bg-white
-              ${
-                formErrors.organizationName && touchedFields.organizationName
-                  ? "border-red-500 bg-red-50/50"
-                  : "border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-100"
-              }`}
+            className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100"
             placeholder="Acme Corporation"
           />
         </div>
-        {formErrors.organizationName && touchedFields.organizationName && (
-          <p className="text-xs text-red-600 font-medium flex items-center gap-1">
-            <CircleAlert size={12} />
-            {formErrors.organizationName}
-          </p>
-        )}
       </div>
 
       {/* Org Email */}
@@ -273,73 +289,96 @@ const ClientForm = ({
             name="email"
             value={clientData.email}
             onChange={(e) => onInputChange(e, "client")}
-            onBlur={() => onBlur("email", "client")}
-            className={`w-full py-3.5 pl-12 pr-4 rounded-xl border outline-none text-sm font-medium bg-white
-              ${
-                formErrors.email && touchedFields.email
-                  ? "border-red-500 bg-red-50/50"
-                  : "border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-100"
-              }`}
+            className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100"
             placeholder="contact@organization.com"
           />
         </div>
-        {formErrors.email && touchedFields.email && (
-          <p className="text-xs text-red-600 font-medium flex items-center gap-1">
-            <CircleAlert size={12} />
-            {formErrors.email}
-          </p>
-        )}
+      </div>
+
+      {/* Password fields */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-slate-700">
+            Password <span className="text-red-500">*</span>
+          </label>
+          <div className="relative">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+              <Lock size={20} />
+            </div>
+            <input
+              type="password"
+              name="password"
+              value={clientData.password}
+              onChange={(e) => onInputChange(e, "client")}
+              className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100"
+              placeholder="Enter password"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-slate-700">
+            Confirm Password <span className="text-red-500">*</span>
+          </label>
+          <div className="relative">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+              <Lock size={20} />
+            </div>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={clientData.confirmPassword}
+              onChange={(e) => onInputChange(e, "client")}
+              className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100"
+              placeholder="Confirm password"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Submit */}
+      <div className="pt-2">
+        <button
+          type="submit"
+          onClick={onSubmit}
+          disabled={loading}
+          className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-4 px-4 text-base rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg hover:shadow-xl active:shadow-md group font-['Roboto_Slab']"
+        >
+          {loading ? (
+            <span className="flex items-center justify-center">
+              <Loader2 className="w-5 h-5 mr-3 animate-spin" />
+              Registering...
+            </span>
+          ) : (
+            <span className="flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+              Create Account
+              <ChevronRight className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform duration-300" />
+            </span>
+          )}
+        </button>
+        <p className="text-slate-500 text-xs text-center mt-3 flex items-center justify-center gap-1">
+          <Lock className="w-3 h-3 flex-shrink-0" />
+          Your data is securely encrypted
+        </p>
       </div>
     </>
   );
 };
 
 // --------------------- Parent Modal ---------------------
-export const RegisterModal = ({ onClose, onSuccess, editData }) => {
-  const isEditMode = !!editData;
+export const RegisterModal = ({ onClose, onSuccess }) => {
   const [activeTab, setActiveTab] = useState("staff");
 
   // Separate states for staff and client
   const [staffData, setStaffData] = useState(initialStaffState);
   const [clientData, setClientData] = useState(initialClientState);
-  
+
   const [recruitmentData, setRecruitmentData] = useState([]);
   const { data, isLoading, isFetching } = useRecruitmentData();
 
   useEffect(() => {
     setRecruitmentData(data);
   }, [data]);
-
-  // Populate form data in edit mode
-  useEffect(() => {
-    if (editData) {
-      if (editData.role === "staff" || editData.employee_id) {
-        setActiveTab("staff");
-        setStaffData({
-          fullName: editData.fullName || "",
-          userName: editData.userName || "",
-          role: editData.role || "staff",
-          position: editData.position || "",
-          personalEmail: editData.personalEmail || editData.email || "",
-          personalPhone: editData.personalPhone || editData.phone || "",
-          jobRole: editData.jobRole || "",
-          employee_id: editData.employee_id || "",
-          phone: editData.phone || "",
-          password: editData.password || "",
-          confirmPassword: editData.confirmPassword || "",
-        });
-      } else {
-        setActiveTab("client");
-        setClientData({
-          organizationName: editData.organizationName || "",
-          email: editData.email || "",
-          phone: editData.phone || "",
-          password: editData.password || "",
-          confirmPassword: editData.confirmPassword || "",
-        });
-      }
-    }
-  }, [editData]);
 
   // Options
   const firstNameOptions = useMemo(() => fullNameOptions(recruitmentData), [recruitmentData]);
@@ -353,136 +392,64 @@ export const RegisterModal = ({ onClose, onSuccess, editData }) => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [formErrors, setFormErrors] = useState({});
-  const [touchedFields, setTouchedFields] = useState({});
 
-  // Get current form data based on active tab
-  const getCurrentFormData = () => {
-    return activeTab === "staff" ? staffData : clientData;
-  };
-
-  const validateForm = () => {
-    const errors = {};
-    const currentData = getCurrentFormData();
-
-    // Common validations
-    if (!currentData.phone) errors.phone = "Phone number is required";
-
-    if (!currentData.password) errors.password = "Password is required";
-    else if (currentData.password.length < 8) errors.password = "Minimum 8 characters";
-
-    if (currentData.password !== currentData.confirmPassword) {
-      errors.confirmPassword = "Passwords don't match";
-    }
-
-    // Staff specific validations
-    if (activeTab === "staff") {
-      if (!staffData.fullName) errors.fullName = "Full Name is required";
-      if (!staffData.role) errors.role = "Role is required";
-      if (!staffData.position) errors.position = "Select a position";
-    }
-
-    // Client specific validations
-    if (activeTab === "client") {
-      if (!clientData.organizationName) errors.organizationName = "Organization name is required";
-      if (!clientData.email) errors.email = "Email is required";
-      else if (!/\S+@\S+\.\S+/.test(clientData.email)) errors.email = "Enter a valid email";
-    }
-
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+  // Function to reset forms
+  const resetForms = () => {
+    setStaffData(initialStaffState);
+    setClientData(initialClientState);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    alert('Form submitted successfully!');
+    console.log("Submitting form with data:", { staffData, clientData, activeTab });
 
-    setLoading(true);
-    setError("");
+    // Reset form after submission
+    resetForms();
 
-    try {
-      let apiData = {};
-      const currentData = getCurrentFormData();
-
-      if (activeTab === "staff") {
-        apiData = {
-          email: staffData.personalEmail,
-          phone: currentData.phone, // Use the phone from common field
-          password: currentData.password,
-          role: "staff",
-          firstName: staffData.userName,
-          userRole: staffData.role,
-          position: staffData.position,
-          employee_id: staffData.employee_id || `EMP${Date.now().toString().slice(-6)}`,
-          personalEmail: staffData.personalEmail,
-          personalPhone: staffData.personalPhone,
-          jobRole: staffData.jobRole,
-        };
-      } else {
-        apiData = {
-          email: clientData.email,
-          phone: currentData.phone,
-          password: currentData.password,
-          role: "client",
-          organizationName: clientData.organizationName,
-        };
-      }
-
-      if (isEditMode) {
-        const response = await axios.put(
-          `/api/${activeTab}s/${editData.id || editData.employee_id || editData._id}`,
-          apiData
-        );
-        if (response.data.success) onSuccess(response.data.data, true);
-        else setError(response.data.message || "Failed to update record");
-      } else {
-        const response = await axios.post(`/api/${activeTab}s/register`, apiData);
-        if (response.data.success) onSuccess(response.data.data, false);
-        else setError(response.data.message || "Failed to add record");
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || "An error occurred");
-    } finally {
-      setLoading(false);
+    // Call onSuccess callback if provided
+    if (onSuccess) {
+      onSuccess();
     }
   };
 
   const handleInputChange = (e, type = activeTab) => {
     const { name, value } = e.target;
-    
+
     if (type === "staff") {
       setStaffData((prev) => ({ ...prev, [name]: value }));
     } else {
       setClientData((prev) => ({ ...prev, [name]: value }));
     }
-    
-    // Clear error for this field
-    if (formErrors[name]) {
-      setFormErrors((prev) => ({ ...prev, [name]: "" }));
-    }
   };
+
+  function generatePWDigit() {
+    // Generate a number between 0 and 9999, pad with zeros to make 4 digits
+    const pw = Math.floor(1000 + Math.random() * 9000);
+    return pw.toString();
+  }
+
+  function generateUserNameDigit() {
+    // Generate a number between 0 and 9999, pad with zeros to make 4 digits
+    const pw = Math.floor(1000 + Math.random() * 9000);
+    return pw.toString();
+  }
 
   const handleSelectChange = (selectedOption, fieldName, type = activeTab) => {
     if (type === "staff" && fieldName === "fullName" && selectedOption) {
       const selectedRecord = recruitmentData?.data?.find((item) => item._id === selectedOption.value);
-      
+      console.log("Selected Record for Full Name:", selectedRecord);
       if (selectedRecord) {
         setStaffData((prev) => ({
           ...prev,
-          fullName: selectedOption.value,
+          fullName: selectedOption.label,
           personalEmail: selectedRecord.personalEmail || "",
           personalPhone: selectedRecord.personalMobile || "",
-          position: selectedRecord.designation || "",
-          jobRole: selectedRecord.jobRole || "",
-          userName: `${selectedRecord.firstName || ""} ${selectedRecord.lastName || ""}`.trim(),
-          employee_id: selectedRecord.employee_id || "",
-        }));
-
-        // Clear errors for auto-filled fields
-        setFormErrors((prev) => ({
-          ...prev,
-          fullName: "",
-          position: "",
+          position: `${selectedRecord.jobRole || ""} - ${selectedRecord.designation || ""}`.trim(),
+          userName: `${selectedRecord.firstName.toLowerCase() || ""}${selectedRecord.lastName.toLowerCase() || ""}${generateUserNameDigit()}`.trim(),
+          employee_id: selectedRecord._id || "",
+          password: `${selectedRecord.firstName.toLowerCase() || ""}${generatePWDigit()}`.trim(),
+          confirmPassword: `${selectedRecord.firstName.toLowerCase() || ""}${generatePWDigit()}`.trim(), // Auto-fill confirm password too
         }));
       }
       return;
@@ -499,36 +466,32 @@ export const RegisterModal = ({ onClose, onSuccess, editData }) => {
         [fieldName]: selectedOption ? selectedOption.value : "",
       }));
     }
-    
-    if (formErrors[fieldName]) {
-      setFormErrors((prev) => ({ ...prev, [fieldName]: "" }));
-    }
-  };
-
-  const handleBlur = (fieldName, type = activeTab) => {
-    setTouchedFields((prev) => ({ ...prev, [fieldName]: true }));
   };
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    setFormErrors({});
-    setTouchedFields({});
     setError("");
+    // Reset form when switching tabs
+    if (tab === "staff") {
+      setStaffData(initialStaffState);
+    } else {
+      setClientData(initialClientState);
+    }
   };
 
-  // ✅ make select styles reusable per-field
-  const customSelectStyles = (errors, field) => ({
+  // ✅ make select styles reusable
+  const customSelectStyles = {
     control: (base, state) => ({
       ...base,
       backgroundColor: "white",
-      borderColor: errors?.[field] ? "#ef4444" : state.isFocused ? "#f59e0b" : "#cbd5e1",
+      borderColor: state.isFocused ? "#f59e0b" : "#cbd5e1",
       borderRadius: "0.75rem",
       padding: "4px 8px",
       minHeight: "56px",
       fontSize: "14px",
       fontWeight: "500",
       boxShadow: state.isFocused ? "0 0 0 2px rgba(245, 158, 11, 0.1)" : "none",
-      "&:hover": { borderColor: errors?.[field] ? "#ef4444" : "#f59e0b" },
+      "&:hover": { borderColor: "#f59e0b" },
     }),
     option: (base, state) => ({
       ...base,
@@ -555,7 +518,7 @@ export const RegisterModal = ({ onClose, onSuccess, editData }) => {
     }),
     indicatorSeparator: () => ({ display: "none" }),
     valueContainer: (base) => ({ ...base, padding: "0 8px" }),
-  });
+  };
 
   return (
     <AnimatePresence>
@@ -582,14 +545,14 @@ export const RegisterModal = ({ onClose, onSuccess, editData }) => {
                 </div>
                 <div>
                   <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-800 font-['Roboto_Slab']">
-                    {isEditMode ? "Edit" : "Register"}
+                    Register
                     <span className="text-amber-500 ml-2">
                       {activeTab === "staff" ? "Staff" : "Client"}
                     </span>
                   </h2>
                   <p className="text-slate-500 text-xs sm:text-sm mt-0.5 flex items-center gap-1">
                     <KeyRound className="w-3 h-3 flex-shrink-0" />
-                    {isEditMode ? "Update existing details" : "Create new account"}
+                    Create new account
                   </p>
                 </div>
               </div>
@@ -605,9 +568,8 @@ export const RegisterModal = ({ onClose, onSuccess, editData }) => {
             <div className="flex border-b border-slate-200">
               <button
                 onClick={() => handleTabChange("staff")}
-                className={`flex-1 py-4 text-center font-medium transition-all duration-300 relative group flex items-center justify-center gap-2 ${
-                  activeTab === "staff" ? "text-amber-600" : "text-slate-500 hover:text-slate-700"
-                }`}
+                className={`flex-1 py-4 text-center font-medium transition-all duration-300 relative group flex items-center justify-center gap-2 ${activeTab === "staff" ? "text-amber-600" : "text-slate-500 hover:text-slate-700"
+                  }`}
               >
                 <User className={`w-4 h-4 ${activeTab === "staff" ? "text-amber-500" : "text-slate-400"}`} />
                 <span className="font-['Roboto_Slab']">Staff</span>
@@ -618,9 +580,8 @@ export const RegisterModal = ({ onClose, onSuccess, editData }) => {
 
               <button
                 onClick={() => handleTabChange("client")}
-                className={`flex-1 py-4 text-center font-medium transition-all duration-300 relative group flex items-center justify-center gap-2 ${
-                  activeTab === "client" ? "text-amber-600" : "text-slate-500 hover:text-slate-700"
-                }`}
+                className={`flex-1 py-4 text-center font-medium transition-all duration-300 relative group flex items-center justify-center gap-2 ${activeTab === "client" ? "text-amber-600" : "text-slate-500 hover:text-slate-700"
+                  }`}
               >
                 <Building className={`w-4 h-4 ${activeTab === "client" ? "text-amber-500" : "text-slate-400"}`} />
                 <span className="font-['Roboto_Slab']">Client</span>
@@ -645,147 +606,22 @@ export const RegisterModal = ({ onClose, onSuccess, editData }) => {
               {activeTab === "staff" ? (
                 <StaffForm
                   staffData={staffData}
-                  formErrors={formErrors}
-                  touchedFields={touchedFields}
-                  onBlur={handleBlur}
                   onSelectChange={handleSelectChange}
                   onInputChange={handleInputChange}
                   roleOptions={roleOptions}
-                  positionOptions={positionOptions}
                   firstNameOptions={firstNameOptions}
                   customSelectStyles={customSelectStyles}
+                  onSubmit={handleSubmit}
+                  loading={loading}
                 />
               ) : (
                 <ClientForm
                   clientData={clientData}
-                  formErrors={formErrors}
-                  touchedFields={touchedFields}
-                  onBlur={handleBlur}
                   onInputChange={handleInputChange}
+                  onSubmit={handleSubmit}
+                  loading={loading}
                 />
               )}
-
-              {/* Common fields - Phone */}
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-slate-700 flex items-center gap-1">
-                  Phone Number <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                    <Phone size={20} />
-                  </div>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={getCurrentFormData().phone}
-                    onChange={(e) => handleInputChange(e, activeTab)}
-                    onBlur={() => handleBlur("phone", activeTab)}
-                    className={`w-full py-3.5 pl-12 pr-4 rounded-xl border outline-none text-sm font-medium bg-white
-                      ${
-                        formErrors.phone && touchedFields.phone
-                          ? "border-red-500 bg-red-50/50"
-                          : "border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-100"
-                      }`}
-                    placeholder="+977 98XXXXXXXX"
-                  />
-                </div>
-                {formErrors.phone && touchedFields.phone && (
-                  <p className="text-xs text-red-600 font-medium flex items-center gap-1">
-                    <CircleAlert size={12} />
-                    {formErrors.phone}
-                  </p>
-                )}
-              </div>
-
-              {/* Password fields */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-slate-700">
-                    Password <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                      <Lock size={20} />
-                    </div>
-                    <input
-                      type="password"
-                      name="password"
-                      value={getCurrentFormData().password}
-                      onChange={(e) => handleInputChange(e, activeTab)}
-                      onBlur={() => handleBlur("password", activeTab)}
-                      className={`w-full py-3.5 pl-12 pr-4 rounded-xl border outline-none text-sm font-medium bg-white
-                        ${
-                          formErrors.password && touchedFields.password
-                            ? "border-red-500 bg-red-50/50"
-                            : "border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-100"
-                        }`}
-                      placeholder="Enter password"
-                    />
-                  </div>
-                  {formErrors.password && touchedFields.password && (
-                    <p className="text-xs text-red-600 font-medium flex items-center gap-1">
-                      <CircleAlert size={12} />
-                      {formErrors.password}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-slate-700">
-                    Confirm Password <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                      <Lock size={20} />
-                    </div>
-                    <input
-                      type="password"
-                      name="confirmPassword"
-                      value={getCurrentFormData().confirmPassword}
-                      onChange={(e) => handleInputChange(e, activeTab)}
-                      onBlur={() => handleBlur("confirmPassword", activeTab)}
-                      className={`w-full py-3.5 pl-12 pr-4 rounded-xl border outline-none text-sm font-medium bg-white
-                        ${
-                          formErrors.confirmPassword && touchedFields.confirmPassword
-                            ? "border-red-500 bg-red-50/50"
-                            : "border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-100"
-                        }`}
-                      placeholder="Confirm password"
-                    />
-                  </div>
-                  {formErrors.confirmPassword && touchedFields.confirmPassword && (
-                    <p className="text-xs text-red-600 font-medium flex items-center gap-1">
-                      <CircleAlert size={12} />
-                      {formErrors.confirmPassword}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Submit */}
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-4 px-4 text-base rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg hover:shadow-xl active:shadow-md group font-['Roboto_Slab']"
-                >
-                  {loading ? (
-                    <span className="flex items-center justify-center">
-                      <Loader2 className="w-5 h-5 mr-3 animate-spin" />
-                      {isEditMode ? "Updating..." : "Registering..."}
-                    </span>
-                  ) : (
-                    <span className="flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                      {isEditMode ? "Update Account" : "Create Account"}
-                      <ChevronRight className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform duration-300" />
-                    </span>
-                  )}
-                </button>
-                <p className="text-slate-500 text-xs text-center mt-3 flex items-center justify-center gap-1">
-                  <Lock className="w-3 h-3 flex-shrink-0" />
-                  Your data is securely encrypted
-                </p>
-              </div>
             </form>
           </div>
         )}

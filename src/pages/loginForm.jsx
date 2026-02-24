@@ -6,6 +6,7 @@ import { SuccessNotify, ErrorNotify } from "../component/hotToaster.jsx";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../component/hooks/useAuth.js";
 import { socket } from "../socket_client/scoket.js";
+import { Italic } from "lucide-react";
 
 
 const LoginForm = () => {
@@ -32,6 +33,9 @@ const LoginForm = () => {
                 console.log(Boolean(user.user.token))
                 user?.user.
                     token ? sessionStorage.setItem('isToken', Boolean(user.user.token)) : null;
+                user?.user.
+                    token ? sessionStorage.setItem('Token', (user.user.token)) : null;
+                    
                 const User = {
                     id: user.user.id,
                     userName: user.user.username,
@@ -57,6 +61,7 @@ const LoginForm = () => {
 
     return (
         <div className="flex relative z-50 items-center justify-center min-h-screen md:w-full lg:full  sm:w-full   w-11/12 mx-auto">
+            
             <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
                 <h2 className="font-bold mb-6 text-center text-amber-500 text-3xl underline  [font-family:'Arial_Narrow',sans-serif]">LogIn</h2>
                 <form onSubmit={handleSubmit}>
@@ -65,7 +70,7 @@ const LoginForm = () => {
                         label="Username:"
                         type="text"
                         name="username"
-                        value={formData?.username}
+                        value={formData?.username }
                         onChange={handleChange}
                         placeholder="Enter your username"
                     />
@@ -76,7 +81,7 @@ const LoginForm = () => {
                             label="Password:"
                             type={showPassword ? "text" : "password"}
                             name="password"
-                            value={formData.password}
+                            value={formData.password }
                             onChange={handleChange}
                             placeholder="Enter your password"
                         />
@@ -147,7 +152,7 @@ const LoginForm = () => {
                            focus:outline-none focus:ring-1 focus:ring-amber-300 focus:border-amber-300
                            hover:border-amber-400 text-md hover:ring-amber-400 transition duration-200 [font-family:'Arial_Narrow',sans-serif]"
                         >
-                            <option value="admin" className="hover:bg-amber-500">Admin</option>
+                            <option value="admin" className="hover:bg-amber-500" >Admin</option>
                             <option value="staff">Staff</option>
                             <option value="client">Client</option>
                         </select>
@@ -164,6 +169,7 @@ const LoginForm = () => {
                     </button>
                 </form>
             </div>
+           
         </div>
     );
 };

@@ -1,6 +1,23 @@
+// socket.js
 import { io } from "socket.io-client";
 
-export const socket = io("http://localhost:5000", {
-  autoConnect: false,        // ⛔ don't connect until login
-  withCredentials: true      // allows cookies if needed
+const SOCKET_URL = "http://localhost:5000";
+
+export const allowedPaths = ["/admin/report", "/staff/report", "/client/report"];
+
+export const socket = io(SOCKET_URL, {
+  withCredentials: true,
+  transports: ["websocket"],
+  autoConnect: false, // important
 });
+
+// optional: attach listeners once
+socket.on("connect", () => {
+  console.log("✅ Connected! ID:", socket);
+});
+
+socket.on("connect_error", (err) => {
+  console.error("❌ Socket Error:", err.message);
+});
+
+export default socket;

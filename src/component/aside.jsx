@@ -22,6 +22,8 @@ const Asidebar = ({ loading, isOpen, setIsOpen }) => {
     try {
       await logout.mutateAsync();
       sessionStorage.removeItem("token");
+      sessionStorage.removeItem("Token");
+      sessionStorage.setItem("isToken", null);
       sessionStorage.removeItem("user");
       navigate('/', { replace: true })
     } catch (error) {
@@ -158,7 +160,7 @@ const Asidebar = ({ loading, isOpen, setIsOpen }) => {
             </>
           ) : (
             <>
-             
+
 
               <button className="flex w-full items-center rounded-lg px-3 py-2
                 text-slate-600 hover:bg-red-100 hover:text-red-600 transition-colors group" onClick={handleLogOut}>

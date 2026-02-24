@@ -14,8 +14,6 @@ const root = createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <Toaster position="top-right" />
-    
-
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
           <App />

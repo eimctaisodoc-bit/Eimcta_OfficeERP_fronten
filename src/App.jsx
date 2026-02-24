@@ -10,7 +10,7 @@ import Data_Table from './component/dataTable';
 import { A_Setting } from './component/admin/setting/setting';
 import { S_Setting } from './component/staff/Settingforms/setting';
 import { useOnlineUsers } from './component/hooks/useOnlineuser';
-import { useSocketListeners } from './component/hooks/usesocketListenerhook';
+// import { useSocketListeners } from './component/hooks/usesocketListenerhook';
 import Admin_Report from './component/admin/report/report';
 import { SalesPipeline } from './component/staff/salespipeline/sales';
 import { RecruitmentTable } from './component/admin/admin_hr/admin_hR_/recruTable';
@@ -18,12 +18,15 @@ import Admin_Hr_Page from './component/admin/hrPage';
 import Staff_hr_pages from './component/staff/Staff_hr_pages';
 import { Admin_task_page } from './component/admin/task/admin_task_page';
 import MyCalendar from './component/calendara';
+import { Staff_task_page } from './component/staff/task/staff_task_page';
+import { Admin_sales } from './component/admin/sales/Admin_sales';
+import { DprForm } from './component/staff/task/dprFrom';
+import { I_Icon } from './component/i_icon';
 function App() {
 
-  useSocketListeners();
-  //  console.log('from usersocket====',res)
-  useOnlineUsers();
   return (
+   <>
+   <I_Icon/>
     <Routes>
 
       <Route path='/' element={<LoginForm />} />
@@ -48,6 +51,8 @@ function App() {
         <Route path="/staff" element={<Dashboard />}>
           <Route index path="report" element={<Admin_Report />} />
           <Route path="hr" element={<Staff_hr_pages />} />
+            <Route path="tasks" element={<Staff_task_page />} />
+             <Route path="sales" element={<SalesPipeline/>}  />
           <Route path="users" element={<Data_Table />} />
           <Route path="settings" element={<S_Setting />} />
         </Route>
@@ -60,11 +65,15 @@ function App() {
           <Route path="settings" element={<S_Setting />} />
         </Route>
       </Route>
+
+      
       <Route path='/date' element={<MyCalendar/>} />
       <Route path='/task' element={<Admin_task_page/>} />
+      <Route path='/dpr' element={<DprForm/>} />
       <Route path='/*' element={<Navigate to="/admin" replace />} />
 
     </Routes>
+   </>
 
   );
 }

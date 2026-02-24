@@ -5,10 +5,10 @@ import {
     Calendar,
     Clock,
     Plus,
-    X,
     Eye,
     Check,
-    Trash2
+    Trash2,
+    Sparkles
 } from "lucide-react";
 
 export const General_Setting = () => {
@@ -32,8 +32,7 @@ export const General_Setting = () => {
             { id: 1, name: "New Year's Day", date: "2024-01-01" },
             { id: 2, name: "Christmas Day", date: "2024-12-25" },
             { id: 3, name: "Thanksgiving", date: "2024-11-28" }
-        ],
-        weekendDays: ["Saturday"]
+        ]
     });
 
     const [newHoliday, setNewHoliday] = useState({ name: "", date: "" });
@@ -52,20 +51,14 @@ export const General_Setting = () => {
     const handleDayToggle = (day) => {
         setSettings(prev => ({
             ...prev,
-            workingDays: {
-                ...prev.workingDays,
-                [day]: !prev.workingDays[day]
-            }
+            workingDays: { ...prev.workingDays, [day]: !prev.workingDays[day] }
         }));
     };
 
     const handleTimeChange = (field, value) => {
         setSettings(prev => ({
             ...prev,
-            workingHours: {
-                ...prev.workingHours,
-                [field]: value
-            }
+            workingHours: { ...prev.workingHours, [field]: value }
         }));
     };
 
@@ -90,331 +83,233 @@ export const General_Setting = () => {
         }));
     };
 
-    const handleSaveSettings = () => {
-        // Here you would typically send the data to an API
-        console.log("Settings saved:", settings);
-        alert("Settings saved successfully!");
-    };
-
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
     };
-    const inputClasses = "w-full px-4 py-3 rounded-xl border border-slate-300 bg-white focus:border-amber-400 focus:ring-4 focus:ring-amber-50 outline-none transition-all text-slate-700 hover:border-amber-300";
+
+    const inputClasses = "w-full px-0 py-3 bg-white border-b border-slate-200 focus:border-amber-500 focus:ring-0 outline-none transition-all text-slate-900 placeholder-slate-300";
+
     return (
-        <div className="bg-white p-4 md:p-6 lg:p-8 rounded-lg shadow-lg ">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8 border-b border-slate-300 pb-4">
-                <h1 className="text-2xl md:text-3xl font-bold text-slate-700">General Settings</h1>
-               
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-                {/* Left Column - Settings Form */}
-                <div className={`space-y-6 md:space-y-8 ${isPreview ? 'opacity-50 pointer-events-none' : ''}`}>
-                    {/* Company Information */}
-                    <div className="border border-slate-300 rounded-xl p-4 md:p-6 bg-white">
-                        <div className="flex items-center gap-3 mb-4 md:mb-6">
-                            <Building2 className="text-amber-600" size={24} />
-                            <h2 className="text-lg md:text-xl font-semibold text-slate-700">Company Information</h2>
-                        </div>
-
-                        <div className="space-y-4 md:space-y-6">
-                            <div>
-                                <label className="block text-sm md:text-base font-medium text-slate-700 mb-2">
-                                    Company Name
-                                </label>
-                                <input
-                                    type="text"
-                                    value={settings.companyName}
-                                    onChange={(e) => setSettings(prev => ({ ...prev, companyName: e.target.value }))}
-                                    className={inputClasses}
-                                    placeholder="Enter company name"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm md:text-base font-medium text-slate-700 mb-2">
-                                    Address
-                                </label>
-                                <textarea
-                                    value={settings.address}
-                                    onChange={(e) => setSettings(prev => ({ ...prev, address: e.target.value }))}
-                                    className={inputClasses}
-                                    rows="3"
-                                    placeholder="Enter company address"
-                                />
-                            </div>
-                        </div>
+        <div 
+            className="bg-white min-h-screen p-6 md:p-12 text-slate-900" 
+            style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
+        >
+            <div className="max-w-6xl mx-auto">
+                {/* Header */}
+                <header className="flex justify-between items-end mb-12">
+                    <div>
+                        <h1 className="text-4xl font-bold text-slate-900 tracking-tight">General Settings</h1>
+                        <p className="text-slate-500 mt-2">Manage your organization's core configuration and schedule.</p>
                     </div>
+                    <button 
+                        onClick={() => setIsPreview(!isPreview)}
+                        className="flex items-center gap-2 px-4 py-2 bg-slate-50 text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
+                    >
+                        <Eye size={18} />
+                        <span className="text-sm font-medium">{isPreview ? "Edit Mode" : "View Preview"}</span>
+                    </button>
+                </header>
 
-                    {/* Working Days & Hours */}
-                    <div className="border border-slate-300 rounded-xl p-4 md:p-6 bg-white">
-                        <div className="flex items-center gap-3 mb-4 md:mb-6">
-                            <Calendar className="text-amber-600" size={24} />
-                            <h2 className="text-lg md:text-xl font-semibold text-slate-700">Working Days & Hours</h2>
-                        </div>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                    {/* Left Side: Forms */}
+                    <div className={`lg:col-span-7 space-y-16 ${isPreview ? 'opacity-40 pointer-events-none' : ''}`}>
+                        
+                        {/* Company Section */}
+                        <section>
+                            <div className="flex items-center gap-4 mb-8">
+                                <Building2 className="text-amber-500" size={28} />
+                                <h2 className="text-2xl font-semibold text-slate-800">Company Profile</h2>
+                            </div>
+                            <div className="space-y-8">
+                                <div>
+                                    <label className="text-xs font-bold text-amber-600 uppercase tracking-widest">Organization Name</label>
+                                    <input
+                                        type="text"
+                                        value={settings.companyName}
+                                        onChange={(e) => setSettings(prev => ({ ...prev, companyName: e.target.value }))}
+                                        className={inputClasses}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-amber-600 uppercase tracking-widest">Physical Address</label>
+                                    <textarea
+                                        value={settings.address}
+                                        onChange={(e) => setSettings(prev => ({ ...prev, address: e.target.value }))}
+                                        className={inputClasses}
+                                        rows="2"
+                                    />
+                                </div>
+                            </div>
+                        </section>
 
-                        <div className="mb-6 md:mb-8">
-                            <label className="block text-sm md:text-base font-medium text-slate-700 mb-3 md:mb-4">
-                                Working Days
-                            </label>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2 md:gap-3">
-                                {daysOfWeek.map((day) => {
-                                    const isActive = settings.workingDays[day.key];
+                        <div className="border-t border-slate-100" />
 
-                                    return (
+                        {/* Working Hours Section */}
+                        <section>
+                            <div className="flex items-center gap-4 mb-8">
+                                <Clock className="text-orange-500" size={28} />
+                                <h2 className="text-2xl font-semibold text-slate-800">Operating Hours</h2>
+                            </div>
+                            
+                            <div className="mb-10">
+                                <label className="text-xs font-bold text-orange-600 uppercase tracking-widest mb-4 block">Active Workdays</label>
+                                <div className="flex flex-wrap gap-3">
+                                    {daysOfWeek.map((day) => (
                                         <button
                                             key={day.key}
-                                            type="button"
                                             onClick={() => handleDayToggle(day.key)}
-                                            className={`
-                                                relative px-4 py-2 md:px-1 md:py-2.5
-                                                rounded-full text-sm md:text-base font-medium
-                                                transition-all duration-200 ease-out
-                                                border
-                                                focus:outline-none focus:ring-4 focus:ring-amber-500/20 focus:border-amber-500
-                                                ${isActive
-                                                    ? `
-                                                        bg-gradient-to-r from-amber-400 to-amber-600
-                                                        text-white border-amber-600
-                                                        shadow-md shadow-amber-300
-                                                        scale-[1.03]
-                                                    `
-                                                    : `
-                                                        bg-white text-slate-700 border-slate-300
-                                                        hover:bg-amber-50 hover:text-slate-800
-                                                        hover:border-slate-400
-                                                        hover:-translate-y-[1px]
-                                                        shadow-sm
-                                                    `
-                                                }
-                                            `}
+                                            className={`h-12 w-12 rounded-xl flex items-center justify-center text-sm font-bold transition-all ${
+                                                settings.workingDays[day.key]
+                                                    ? "bg-orange-500 text-white shadow-lg shadow-orange-100"
+                                                    : "bg-slate-50 text-slate-400 hover:bg-slate-100"
+                                            }`}
                                         >
-                                            {day.label.slice(0, 3)}
+                                            {day.label.slice(0, 1)}
                                         </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                            <div>
-                                <label className="block text-sm md:text-base font-medium text-slate-700 mb-2 flex items-center gap-2">
-                                    <Clock size={16} />
-                                    Start Time
-                                </label>
-                                <input
-                                    type="time"
-                                    value={settings.workingHours.start}
-                                    onChange={(e) => handleTimeChange("start", e.target.value)}
-                                    className="w-full px-4 py-3 text-sm
-                                             border border-slate-300 bg-white focus:border-amber-400 focus:ring-4 focus:ring-amber-50 outline-none transition-all text-slate-700 hover:border-amber-300 shadow-sm"
-                                />
+                                    ))}
+                                </div>
                             </div>
 
-                            <div>
-                                <label className="block text-sm md:text-base font-medium text-slate-700 mb-2  items-center gap-2">
-                                    <Clock size={16} />
-                                    End Time
-                                </label>
-                                <input
-                                    type="time"
-                                    value={settings.workingHours.end}
-                                    onChange={(e) => handleTimeChange("end", e.target.value)}
-                                    className="w-full px-4 py-3 text-sm
-                                             
-                                              rounded-xl border border-slate-300 bg-white focus:border-amber-400 focus:ring-4 focus:ring-amber-50 outline-none transition-all text-slate-700 hover:border-amber-300 shadow-sm"
-                                />
+                            <div className="grid grid-cols-2 gap-10">
+                                <div>
+                                    <label className="text-xs font-bold text-orange-600 uppercase tracking-widest block mb-1">Shift Start</label>
+                                    <input
+                                        type="time"
+                                        value={settings.workingHours.start}
+                                        onChange={(e) => handleTimeChange("start", e.target.value)}
+                                        className={inputClasses}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-orange-600 uppercase tracking-widest block mb-1">Shift End</label>
+                                    <input
+                                        type="time"
+                                        value={settings.workingHours.end}
+                                        onChange={(e) => handleTimeChange("end", e.target.value)}
+                                        className={inputClasses}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                        </section>
 
-                    {/* Holidays Configuration */}
-                    <div className="border border-slate-300 rounded-xl p-4 md:p-6 bg-white">
-                        <div className="flex items-center gap-3 mb-4 md:mb-6">
-                            <Calendar className="text-amber-600" size={24} />
-                            <h2 className="text-lg md:text-xl font-semibold text-slate-700">Holidays & Weekend Configuration</h2>
-                        </div>
+                        <div className="border-t border-slate-100" />
 
-                        <div className="mb-6 md:mb-8">
-                            <label className="block text-sm md:text-base font-medium text-slate-700 mb-3 md:mb-4">
-                                Add New Holiday
-                            </label>
-                            <div className="flex flex-col sm:flex-row md:flex-col gap-3 md:gap-4">
-                                <input
-                                    type="text"
-                                    value={newHoliday.name}
-                                    onChange={(e) => setNewHoliday(prev => ({ ...prev, name: e.target.value }))}
-                                    className="flex-1 px-4 py-3 text-sm
-                                             bg-white border border-slate-300
-                                              rounded-xl focus:ring-4 focus:ring-amber-500/20
-                                               focus:border-amber-500 outline-none
-                                                transition-all shadow-sm"
-                                    placeholder="Holiday Name"
-                                />
-                                <input
-                                    type="date"
-                                    value={newHoliday.date}
-                                    onChange={(e) => setNewHoliday(prev => ({ ...prev, date: e.target.value }))}
-                                    className="px-4 py-3 text-sm
-                                             bg-white border border-slate-300
-                                              rounded-xl focus:ring-4 focus:ring-amber-500/20
-                                               focus:border-amber-500 outline-none
-                                                transition-all shadow-sm"
-                                />
+                        {/* Holidays Section */}
+                        <section>
+                            <div className="flex items-center gap-4 mb-8">
+                                <Calendar className="text-blue-500" size={28} />
+                                <h2 className="text-2xl font-semibold text-slate-800">Public Holidays</h2>
+                            </div>
+
+                            <div className="flex gap-4 items-end mb-8">
+                                <div className="flex-1">
+                                    <input
+                                        type="text"
+                                        placeholder="Holiday Title"
+                                        value={newHoliday.name}
+                                        onChange={(e) => setNewHoliday(prev => ({ ...prev, name: e.target.value }))}
+                                        className={inputClasses}
+                                    />
+                                </div>
+                                <div className="w-40">
+                                    <input
+                                        type="date"
+                                        value={newHoliday.date}
+                                        onChange={(e) => setNewHoliday(prev => ({ ...prev, date: e.target.value }))}
+                                        className={inputClasses}
+                                    />
+                                </div>
                                 <button
                                     onClick={handleAddHoliday}
-                                    className="px-4 py-3 text-sm md:text-base bg-gradient-to-r from-amber-400 to-amber-600 text-white rounded-lg hover:from-amber-500 hover:to-amber-700 transition-colors flex items-center justify-center gap-2 focus:ring-4 focus:ring-amber-500/20 focus:outline-none"
+                                    className="p-3 bg-amber-500 text-white rounded-full hover:bg-emerald-600 transition-transform hover:scale-110 shadow-md shadow-emerald-100"
                                 >
-                                    <Plus size={18} />
-                                    Add
+                                    <Plus size={24} />
                                 </button>
                             </div>
-                        </div>
 
-                        <div>
-                            <label className="block text-sm md:text-base font-medium text-slate-700 mb-3 md:mb-4">
-                                Scheduled Holidays
-                            </label>
-                            <div className="space-y-2 max-h-60 overflow-y-auto">
+                            <div className="space-y-4">
                                 {settings.holidays.map((holiday) => (
-                                    <div
-                                        key={holiday.id}
-                                        className="flex items-center justify-between p-3 md:p-4 bg-amber-50 border border-slate-200 rounded-lg hover:bg-amber-100 transition-colors"
-                                    >
-                                        <div>
-                                            <span className="font-medium text-slate-700 text-sm md:text-base">{holiday.name}</span>
-                                            <span className="ml-3 text-xs md:text-sm text-slate-500">{formatDate(holiday.date)}</span>
+                                    <div key={holiday.id} className="flex items-center justify-between py-3 group">
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-2 w-2 rounded-full bg-amber-400" />
+                                            <div>
+                                                <p className="font-medium text-slate-800">{holiday.name}</p>
+                                                <p className="text-xs text-slate-400 font-sans tracking-tight">{formatDate(holiday.date)}</p>
+                                            </div>
                                         </div>
                                         <button
                                             onClick={() => handleRemoveHoliday(holiday.id)}
-                                            className="p-1 md:p-2 text-slate-400 hover:text-red-500 transition-colors focus:ring-4 focus:ring-red-500/20 focus:outline-none"
+                                            className="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
                                         >
                                             <Trash2 size={18} />
                                         </button>
                                     </div>
                                 ))}
-                                {settings.holidays.length === 0 && (
-                                    <div className="text-center py-4 text-slate-400 text-sm md:text-base">
-                                        No holidays configured
-                                    </div>
-                                )}
+                            </div>
+                        </section>
+                    </div>
+
+                    {/* Right Side: Preview Card */}
+                    <div className="lg:col-span-5">
+                        <div className="sticky top-12 p-8 bg-slate-900
+                         rounded-[2rem] text-white  overflow-hidden">
+                            {/* Decorative Background Element */}
+                            <div className="absolute -top-24 -right-24 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl" />
+                            
+                            <div className="relative z-10">
+                                <div className="flex items-center gap-2 text-amber-400 mb-10">
+                                    <Sparkles size={20} />
+                                    <span className="text-xs font-bold uppercase tracking-[0.2em]">System Insight</span>
+                                </div>
+
+                                <div className="space-y-12">
+                                    <section>
+                                        <h3 className="text-3xl font-bold leading-tight">{settings.companyName || "Company Name"}</h3>
+                                        <div className="flex items-start gap-2 mt-4 text-slate-400">
+                                            <MapPin size={18} className="shrink-0 text-amber-500" />
+                                            <p className="text-sm leading-relaxed">{settings.address || "No address set"}</p>
+                                        </div>
+                                    </section>
+
+                                    <section className="grid grid-cols-2 gap-8 border-t border-slate-800 pt-8">
+                                        <div>
+                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Status</p>
+                                            <div className="flex items-center gap-2">
+                                                <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                                                <span className="text-sm font-medium">Live & Active</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Shift</p>
+                                            <p className="text-sm font-medium text-orange-400">{settings.workingHours.start} — {settings.workingHours.end}</p>
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">Calendar Exceptions</p>
+                                        <div className="space-y-3">
+                                            {settings.holidays.slice(0, 2).map(h => (
+                                                <div key={h.id} className="flex justify-between items-center text-xs">
+                                                    <span className="text-slate-300">{h.name}</span>
+                                                    <span className="text-emerald-400 font-sans">{new Date(h.date).toLocaleDateString('en-GB')}</span>
+                                                </div>
+                                            ))}
+                                            <p className="text-[10px] text-slate-600 italic">Total of {settings.holidays.length} holidays configured</p>
+                                        </div>
+                                    </section>
+                                </div>
+
+                                <button
+                                    className="w-full mt-12 py-4 bg-amber-500 hover:bg-amber-600 text-slate-900 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 active:scale-95 shadow-xl shadow-amber-900/20"
+                                >
+                                    <Check size={20} />
+                                    Save Changes
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                {/* Right Column - Preview */}
-                <div className={`border border-slate-300 rounded-xl p-4 md:p-6 lg:p-8 bg-white ${!isPreview ? 'lg:block hidden' : ''}`}>
-                    <div className="flex items-center gap-3 mb-6 md:mb-8">
-                        <Eye className="text-amber-600" size={24} />
-                        <h2 className="text-lg md:text-xl font-semibold text-slate-700">Settings Preview</h2>
-                    </div>
-
-                    <div className="space-y-6 md:space-y-8">
-                        {/* Company Preview */}
-                        <div className="p-4 md:p-6 rounded-lg border border-slate-300 bg-amber-50">
-                            <h3 className="font-semibold text-slate-700 mb-3 md:mb-4 flex items-center gap-2 text-base md:text-lg">
-                                <Building2 size={18} className="text-amber-600" />
-                                Company Information
-                            </h3>
-                            <div className="space-y-2 md:space-y-3">
-                                <p className="text-base md:text-lg font-medium text-amber-600">{settings.companyName}</p>
-                                <p className="text-slate-700 text-sm md:text-base flex items-start gap-2">
-                                    <MapPin size={16} className="text-amber-400 mt-1 flex-shrink-0" />
-                                    {settings.address}
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Working Days Preview */}
-                        <div className="p-4 md:p-6 rounded-lg border border-slate-300 bg-amber-50">
-                            <h3 className="font-semibold text-slate-700 mb-3 md:mb-4 flex items-center gap-2 text-base md:text-lg">
-                                <Calendar size={18} className="text-amber-600" />
-                                Working Schedule
-                            </h3>
-                            <div className="space-y-3 md:space-y-4">
-                                <div>
-                                    <p className="text-sm md:text-base text-slate-700 mb-2 md:mb-3">Working Days:</p>
-                                    <div className="flex flex-wrap gap-2">
-                                        {daysOfWeek.map((day) => (
-                                            <span
-                                                key={day.key}
-                                                className={`px-3 py-1 text-start rounded-full text-xs md:text-sm ${settings.workingDays[day.key]
-                                                    ? "bg-gradient-to-r from-amber-400 to-amber-600 text-white border border-amber-600"
-                                                    : "bg-white text-slate-500 border border-slate-300"
-                                                    }`}
-                                            >
-                                                {day.label}
-                                                {settings.workingDays[day.key] && (
-                                                    <Check size={12} className="inline ml-1" />
-                                                )}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div>
-                                    <p className="text-sm md:text-base text-slate-700 mb-1 md:mb-2">Working Hours:</p>
-                                    <p className="font-medium text-amber-600 text-base md:text-lg">
-                                        {settings.workingHours.start} - {settings.workingHours.end}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Holidays Preview */}
-                        <div className="p-4 md:p-6 rounded-lg border border-slate-300 bg-amber-50">
-                            <h3 className="font-semibold text-slate-700 mb-3 md:mb-4 flex items-center gap-2 text-base md:text-lg">
-                                <Calendar size={18} className="text-amber-600" />
-                                Holidays ({settings.holidays.length})
-                            </h3>
-                            <div className="space-y-2 md:space-y-3">
-                                {settings.holidays.slice(0, 5).map((holiday) => (
-                                    <div
-                                        key={holiday.id}
-                                        className="flex items-center justify-between p-2 md:p-3 border-b border-slate-300 last:border-b-0"
-                                    >
-                                        <span className="text-slate-700 text-sm md:text-base">{holiday.name}</span>
-                                        <span className="text-xs md:text-sm text-slate-500">
-                                            {new Date(holiday.date).toLocaleDateString()}
-                                        </span>
-                                    </div>
-                                ))}
-                                {settings.holidays.length > 5 && (
-                                    <p className="text-sm text-amber-600 text-center pt-2 md:pt-3">
-                                        +{settings.holidays.length - 5} more holidays
-                                    </p>
-                                )}
-                                {settings.holidays.length === 0 && (
-                                    <p className="text-slate-400 text-center py-2 md:py-3 text-sm md:text-base">No holidays configured</p>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Summary */}
-                      
-                    </div>
-                </div>
-            </div>
-
-            {/* Save Button */}
-            <div className="mt-6 md:mt-8 pt-6 border-t border-slate-300 flex justify-end">
-                <button
-                    onClick={handleSaveSettings}
-                    disabled={isPreview}
-                    className={`px-6 py-3 text-sm md:text-base rounded-lg font-medium transition-all flex items-center gap-2 ${isPreview
-                        ? "bg-slate-300 text-slate-500 cursor-not-allowed"
-                        : "bg-gradient-to-r from-amber-400 to-amber-600 text-white hover:from-amber-500 hover:to-amber-700 shadow-lg focus:ring-4 focus:ring-amber-500/20 focus:outline-none"
-                        }`}
-                >
-                    <Check size={20} />
-                    Save Settings
-                </button>
             </div>
         </div>
     );

@@ -302,6 +302,7 @@ const SelectField = ({ label, name, value, onChange, options, error, required })
       name={name}
       options={options.map(v => ({ label: v, value: v }))}
       value={value ? { label: value, value: value } : null}
+      
       onChange={(opt) => onChange(opt, name)}
       styles={customSelectStyles(!!error)}
     />

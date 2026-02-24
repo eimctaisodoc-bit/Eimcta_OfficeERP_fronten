@@ -1,6 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Select from 'react-select';
-import DataTable from "react-data-table-component";
 import {
     Eye,
     Edit2,
@@ -26,7 +25,15 @@ import {
     MapPin,
     Award,
     TrendingUp,
-    Check
+    Check,
+    ShieldOff,
+    X,
+    CalendarDays,
+    BriefcaseBusiness,
+    ShieldCheck,
+    IdCard,
+    Building2,
+    Globe
 } from "lucide-react";
 import RecruitmentForm from "./emp-mgt_client";
 
@@ -68,7 +75,7 @@ const formatDate = value =>
 /* =======================
    AVATAR COMPONENT
 ======================= */
-const AvatarWithHover = ({ firstName, lastName, employeeId, department, designation }) => {
+const AvatarWithHover = ({ firstName, lastName, employeeId, department, designation,onClick }) => {
     const getInitials = (first, last) => {
         return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase();
     };
@@ -92,7 +99,7 @@ const AvatarWithHover = ({ firstName, lastName, employeeId, department, designat
     const initials = getInitials(firstName, lastName);
 
     return (
-        <div className="group relative ">
+        <div className="group relative cursor-pointer "   onClick={onClick}>
             <div className={`
         w-10 h-10 rounded-full 
         bg-gradient-to-br ${avatarColor}
@@ -125,13 +132,15 @@ const StatusBadge = ({ status }) => {
     ];
 
     return (
+      
         <span
             className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border shadow-sm shadow-slate-200/50 ${bg} ${text}`}
             style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
-        >
+            >
             {icon}
             {status}
         </span>
+            // </div>
     );
 };
 
@@ -162,46 +171,37 @@ const EmploymentTypeBadge = ({ type }) => {
 const ActionButtons = ({ row, onActionClick }) => {
     return (
         <div className="flex items-center gap-1.5">
-            <button className="p-2 bg-gradient-to-r from-slate-50 to-white border border-slate-200 rounded-lg hover:bg-gradient-to-r hover:from-slate-100 hover:to-white transition-all duration-300 hover:shadow-sm shadow-slate-200/50 group">
-                <Eye size={16} className="text-slate-600 group-hover:text-blue-600 transition-colors" />
-            </button>
-            <button
-                className="p-2 bg-gradient-to-r from-slate-50 to-white border border-slate-200 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-white transition-all duration-300 hover:shadow-sm shadow-blue-200/50 group"
-                onClick={onActionClick}
-            >
-                <Edit2 size={16} className="text-blue-600 group-hover:text-blue-700 transition-colors" />
-            </button>
-            <button className="p-2 bg-gradient-to-r from-slate-50 to-white border border-slate-200 rounded-lg hover:bg-gradient-to-r hover:from-rose-50 hover:to-white transition-all duration-300 hover:shadow-sm shadow-rose-200/50 group">
+            <div className="relative group inline-block">
+
+                <button className="p-2 cursor-pointer bg-gradient-to-r from-slate-50 to-white border border-slate-200 rounded-lg 
+                     hover:from-slate-100 hover:to-white transition-all duration-300 
+                     hover:shadow-sm shadow-slate-200/50">
+                    <ShieldOff size={16} className="text-slate-600 group-hover:text-blue-600 transition-colors" />
+                </button>
+
+                {/* Tooltip */}
+                <div className="absolute left-1/2 -translate-x-1/2 -top-10 
+                  flex flex-col items-center
+                  opacity-0 group-hover:opacity-100
+                  transition-all duration-300
+                  pointer-events-none">
+
+                    {/* Tooltip Text */}
+                    <div className="bg-slate-800 text-white text-xs px-3 py-1.5 rounded-md whitespace-nowrap shadow-lg">
+                        User is disabled 
+                    </div>
+
+                    {/* Middle Arrow */}
+                    <div className="w-2.5 h-2.5 bg-slate-800 rotate-45 -mt-1.5"></div>
+
+                </div>
+
+            </div>
+
+            <button className="p-2 cursor-pointer bg-gradient-to-r from-slate-50 to-white border border-slate-200 rounded-lg hover:bg-gradient-to-r hover:from-rose-50 hover:to-white transition-all duration-300 hover:shadow-sm shadow-rose-200/50 group">
                 <Trash2 size={16} className="text-rose-600 group-hover:text-rose-700 transition-colors" />
             </button>
-            <div className="group relative duration-300">
-                <button className="p-2 bg-gradient-to-r from-slate-50 to-white border border-slate-200 rounded-lg hover:bg-gradient-to-r hover:from-slate-100 hover:to-white transition-all duration-300 hover:shadow-sm shadow-slate-200/50">
-                    <MoreVertical size={16} className="text-slate-600" />
-                </button>
-                <div className="absolute right-0 top-9 z-50 hidden group-hover:block hover:block bg-gradient-to-br from-white to-slate-50 shadow-xl shadow-slate-900/10 border border-slate-200 rounded-lg p-2 w-56 backdrop-blur-sm">
-                    <button
-                        onClick={() => console.log("View Profile clicked")}
-                        className="w-full text-left px-3 py-2.5 rounded-md hover:bg-gradient-to-r hover:from-blue-50 hover:to-transparent text-sm transition-all duration-300"
-                        style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
-                    >
-                        👤 View Full Profile
-                    </button>
-                    <button
-                        onClick={() => console.log("Documents clicked")}
-                        className="w-full text-left px-3 py-2.5 rounded-md hover:bg-gradient-to-r hover:from-emerald-50 hover:to-transparent text-sm transition-all duration-300"
-                        style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
-                    >
-                        📄 View Documents
-                    </button>
-                    <button
-                        onClick={() => console.log("Performance clicked")}
-                        className="w-full text-left px-3 py-2.5 rounded-md hover:bg-gradient-to-r hover:from-amber-50 hover:to-transparent text-sm transition-all duration-300"
-                        style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
-                    >
-                        📈 Performance Review
-                    </button>
-                </div>
-            </div>
+
         </div>
     );
 };
@@ -235,169 +235,7 @@ const CustomCheckbox = ({ checked, onChange, id }) => (
     </div>
 );
 
-/* =======================
-   COLUMNS
-======================= */
-const generateColumns = ({ onActionClick, selectedRows, onSelectRow, onSelectAll }) => [
-    {
-        name: (
-            <div className="flex items-center gap-2">
-                <CustomCheckbox
-                    checked={selectedRows.length === recruitmentData.length}
-                    onChange={onSelectAll}
-                    id="select-all"
-                />
 
-            </div>
-        ),
-        cell: row => (
-            <CustomCheckbox
-                checked={selectedRows.includes(row.employeeId)}
-                onChange={() => onSelectRow(row.employeeId)}
-                id={row.employeeId}
-            />
-        ),
-        width: "80px",
-        minWidth: "80px"
-    },
-    {
-        name: <span className="font-bold text-slate-800">Employee</span>,
-        selector: row => `${row.firstName} ${row.lastName}`,
-        sortable: true,
-        cell: row => (
-            <div className="flex items-center gap-3">
-                <AvatarWithHover
-                    firstName={row.firstName}
-                    lastName={row.lastName}
-                    employeeId={row.employeeId}
-                    department={row.department}
-                    designation={row.designation}
-                />
-                <div>
-                    <div
-                        className="font-medium text-slate-900 tracking-wide"
-                        style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 500 }}
-                    >
-                        {row.firstName} {row.lastName}
-                    </div>
-                    <div
-                        className="text-sm text-slate-600 mt-0.5"
-                        style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
-                    >
-                        {row.employeeId}
-                    </div>
-                </div>
-            </div>
-        ),
-        minWidth: "220px"
-    },
-    {
-        name: <span className="font-bold text-slate-800">Email</span>,
-        selector: row => row.officeEmail,
-        cell: row => (
-            <div
-                className="text-slate-700 hover:text-blue-600 transition-colors duration-300 cursor-pointer"
-                style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
-            >
-                {row.officeEmail}
-            </div>
-        ),
-        minWidth: "220px"
-    },
-    {
-        name: <span className="font-bold text-slate-800">Contact</span>,
-        selector: row => row.officeMobile,
-        cell: row => (
-            <div
-                className="text-slate-700"
-                style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
-            >
-                {row.officeMobile}
-            </div>
-        ),
-        minWidth: "160px"
-    },
-    {
-        name: <span className="font-bold text-slate-800">Department</span>,
-        selector: row => row.department,
-        sortable: true,
-        cell: row => (
-            <div
-                className="text-slate-800"
-                style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 500 }}
-            >
-                {row.department}
-            </div>
-        ),
-        minWidth: "160px"
-    },
-    {
-        name: <span className="font-bold text-slate-800">Designation</span>,
-        selector: row => row.designation,
-        sortable: true,
-        cell: row => (
-            <div
-                className="text-slate-800"
-                style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 500 }}
-            >
-                {row.designation}
-            </div>
-        ),
-        minWidth: "180px"
-    },
-    {
-        name: <span className="font-bold text-slate-800">Employment Type</span>,
-        selector: row => row.employmentType,
-        sortable: true,
-        cell: row => <EmploymentTypeBadge type={row.employmentType} />,
-        minWidth: "140px"
-    },
-    {
-        name: <span className="font-bold text-slate-800">Status</span>,
-        selector: row => row.employeeStatus,
-        sortable: true,
-        cell: row => <StatusBadge status={row.employeeStatus} />,
-        minWidth: "140px"
-    },
-    {
-        name: <span className="font-bold text-slate-800">Join Date</span>,
-        selector: row => row.dateOfJoining,
-        sortable: true,
-        cell: row => (
-            <div
-                className="text-slate-700"
-                style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
-            >
-                {formatDate(row.dateOfJoining)}
-            </div>
-        ),
-        minWidth: "140px"
-    },
-    {
-        name: <span className="font-bold text-slate-800">End Date</span>,
-        selector: row => row.contractEndDate || row.dateOfJoining,
-        sortable: true,
-        cell: row => {
-            const endDate = row.contractEndDate ||
-                new Date(new Date(row.dateOfJoining).setFullYear(new Date(row.dateOfJoining).getFullYear() + 1)).toISOString().split('T')[0];
-            return (
-                <div
-                    className="text-slate-700 flex items-center gap-2"
-                    style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
-                >
-                    {formatDate(endDate)}
-                </div>
-            );
-        },
-        minWidth: "140px"
-    },
-    {
-        name: <span className="font-bold text-slate-800">Actions</span>,
-        cell: row => <ActionButtons row={row} onActionClick={onActionClick} />,
-        ignoreRowClick: true,
-        minWidth: "180px"
-    }
-];
 
 /* =======================
    SAMPLE DATA WITH END DATES
@@ -509,60 +347,6 @@ const recruitmentData = [
     }
 ];
 
-/* =======================
-   CUSTOM STYLES FOR DATATABLE
-======================= */
-const customStyles = {
-    headCells: {
-        style: {
-            padding: "18px 24px",
-            backgroundColor: "#f8fafc",
-            //   borderBottom: "2px solid #e2e8f0",
-            fontSize: "14px",
-            color: "#1e293b",
-            fontFamily: "'Roboto Slab', serif",
-            fontWeight: 600,
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-        },
-    },
-    cells: {
-        style: {
-            padding: "22px 24px",
-            fontSize: "14px",
-            color: "#334155",
-            borderBottom: "1px solid #f1f5f9",
-            transition: "background-color 0.3s ease",
-        },
-    },
-    rows: {
-        style: {
-            backgroundColor: "#ffffff",
-            boxShadow: "0 1px 0 0 #f1f5f9",
-            "&:hover": {
-                backgroundColor: "#f8fafc",
-                transform: "translateY(-1px)",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-                transition: "all 0.3s ease",
-            },
-        },
-        highlightOnHoverStyle: {
-            backgroundColor: "#f1f5f9",
-            boxShadow: "0 4px 12px rgba(245, 158, 11, 0.15)",
-        },
-    },
-    pagination: {
-        style: {
-            borderTop: "2px solid #e2e8f0",
-            padding: "20px 24px",
-            fontSize: "14px",
-            fontFamily: "'Roboto Slab', serif",
-            fontWeight: 400,
-            boxShadow: "0 -2px 8px rgba(0,0,0,0.05)",
-        },
-    },
-};
 
 /* =======================
    CUSTOM STYLES FOR REACT-SELECT
@@ -650,9 +434,11 @@ export const RecruitmentTable = () => {
     const [actionState, setActionState] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
     const [open, SetIsOpen] = useState(false);
+     const [isOpen, setIs_Open] = useState(false);
 
     const handleClose = () => {
         SetIsOpen((prev) => { !prev })
+
     }
     useEffect(() => {
 
@@ -670,14 +456,6 @@ export const RecruitmentTable = () => {
                 ? prev.filter(id => id !== employeeId)
                 : [...prev, employeeId]
         );
-    };
-
-    const handleSelectAll = () => {
-        if (selectedRows.length === filteredData.length) {
-            setSelectedRows([]);
-        } else {
-            setSelectedRows(filteredData.map(row => row.employeeId));
-        }
     };
 
     // Filter data based on search and selected filters
@@ -698,19 +476,39 @@ export const RecruitmentTable = () => {
         });
     }, [search, selectedStatus, selectedType]);
 
-    const columns = useMemo(() =>
-        generateColumns({
-            onActionClick,
-            selectedRows,
-            onSelectRow: handleSelectRow,
-            onSelectAll: handleSelectAll
-        }),
-        [selectedRows]
-    );
+    // will be recalculated whenever the current page or filteredData changes
+    const [currentPage, setCurrentPage] = useState(1);
+    const rowsPerPage = 5;
+
+    const paginatedData = useMemo(() => {
+        const start = (currentPage - 1) * rowsPerPage;
+        return filteredData.slice(start, start + rowsPerPage);
+    }, [filteredData, currentPage]);
+
+    const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+    // reset to first page whenever filters/search change so we don't end up on an empty page
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filteredData]);
+
+    const handleSelectAll = () => {
+        if (selectedRows.length === paginatedData.length) {
+            setSelectedRows([]);
+        } else {
+            setSelectedRows(paginatedData.map(row => row.employeeId));
+        }
+    };
+
+
+    const handleGetInfo = useCallback((id) => {
+        console.log(id)
+        setIs_Open(true)
+}, []);
     // document.body.style.overflow='hidden'
 
     return (
-        <div className="p-6 min-h-screen bg-white relative ">
+        <div className="p-1 min-h-screen bg-white relative ">
             <div className="max-w-7xl mx-auto">
 
                 {/* HEADER SECTION */}
@@ -760,8 +558,8 @@ export const RecruitmentTable = () => {
                     </div>
 
                     {/* STATS CARDS */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
-                        <div className="bg-white border border-amber-200 rounded-2xl p-6 shadow  hover:shadow-2xl 
+                    <div className="grid grid-cols-1  md:grid-cols-4  gap-5 mb-8">
+                        <div className="bg-white border border-amber-300 rounded-2xl p-6 shadow   
              hover:scale-105 transition-all duration-300">
                             <div className="flex items-start justify-between">
                                 <div>
@@ -778,14 +576,14 @@ export const RecruitmentTable = () => {
                                         {recruitmentData.length}
                                     </p>
                                 </div>
-                                <div className="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl shadow-lg shadow-blue-200/30">
+                                <div className="p-3 bg-gradient-to-br from-blue-100 
+                                to-blue-200 rounded-xl shadow-lg shadow-blue-200/30">
                                     <Users className="text-blue-700" size={22} />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white border border-amber-200 rounded-2xl p-6 shadow 
-            hover:shadow-2xl  hover:scale-105 transition-all duration-300">
+                        <div className="bg-white border border-amber-300 rounded-2xl p-6   hover:scale-105 transition-all duration-300">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p
@@ -807,8 +605,7 @@ export const RecruitmentTable = () => {
                             </div>
                         </div>
 
-                        <div className="bg-white border border-amber-200 rounded-2xl p-6 shadow 
-             hover:shadow-2xl  hover:scale-105 transition-all duration-300">
+                        <div className="bg-white border border-amber-300 rounded-2xl p-6   hover:scale-105 transition-all duration-300">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p
@@ -830,8 +627,7 @@ export const RecruitmentTable = () => {
                             </div>
                         </div>
 
-                        <div className="bg-white  rounded-2xl p-6 shadow 
-            hover:shadow-2xl  hover:scale-105 transition-all duration-300">
+                        <div className="bg-white  rounded-2xl p-6  border border-amber-300  hover:scale-105 transition-all duration-300">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p
@@ -923,35 +719,178 @@ export const RecruitmentTable = () => {
                 </div>
 
                 {/* TABLE CONTAINER */}
-                <div className="bg-white to-slate-50 border
-         border-slate-300 rounded-2xl overflow-hidden shadow">
-                    <DataTable
-                        columns={columns}
-                        data={filteredData}
-                        pagination
-                        paginationPerPage='5'
-                        paginationRowsPerPageOptions={[5, 10, 15, 20]}
-                        highlightOnHover
-                        responsive
-                        dense
-                        customStyles={customStyles}
-                        noDataComponent={
-                            <div className="py-16 text-center">
-                                <div
-                                    className="text-slate-400 mb-3 text-lg"
-                                    style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
-                                >
-                                    📭 No recruitment records found
-                                </div>
-                                <p
-                                    className="text-slate-500"
-                                    style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
-                                >
-                                    Try adjusting your search or filters to find what you're looking for
-                                </p>
+                {/* custom tailwind table */}
+                <div className="bg-white to-slate-50 border border-slate-300 rounded-2xl overflow-hidden ">
+                    {paginatedData.length === 0 ? (
+                        <div className="py-16 text-center">
+                            <div
+                                className="text-slate-400 mb-3 text-lg"
+                                style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
+                            >
+                                📭 No recruitment records found
                             </div>
-                        }
-                    />
+                            <p
+                                className="text-slate-500"
+                                style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
+                            >
+                                Try adjusting your search or filters to find what you're looking for
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <CustomCheckbox
+                                                checked={selectedRows.length === paginatedData.length}
+                                                onChange={handleSelectAll}
+                                                id="select-all"
+                                            />
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Designation</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employment Type</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Join Date</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {paginatedData.map(row => (
+                                        <tr key={row.employeeId} className="hover:bg-gray-100">
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <CustomCheckbox
+                                                    checked={selectedRows.includes(row.employeeId)}
+                                                    onChange={() => handleSelectRow(row.employeeId)}
+                                                    id={row.employeeId}
+                                                />
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex items-center gap-3">
+                                                    <AvatarWithHover 
+                                                        firstName={row.firstName}
+                                                        lastName={row.lastName}
+                                                        employeeId={row.employeeId}
+                                                        department={row.department}
+                                                        designation={row.designation}
+                                                        onClick={() => handleGetInfo(row.employeeId)}
+                                                    />
+                                                    <div>
+                                                        <div
+                                                            className="font-medium text-slate-900 tracking-wide"
+                                                            style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 500 }}
+                                                        >
+                                                            {row.firstName} {row.lastName}
+                                                        </div>
+                                                        <div
+                                                            className="text-sm text-slate-600 mt-0.5"
+                                                            style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
+                                                        >
+                                                            {row.employeeId}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div
+                                                    className="text-slate-700 hover:text-blue-600 transition-colors duration-300 cursor-pointer"
+                                                    style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
+                                                >
+                                                    {row.officeEmail}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div
+                                                    className="text-slate-700"
+                                                    style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
+                                                >
+                                                    {row.officeMobile}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div
+                                                    className="text-slate-800"
+                                                    style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 500 }}
+                                                    >
+                                                    {row.department}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div
+                                                    className="text-slate-800"
+                                                    style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 500 }}
+                                                >
+                                                    {row.designation}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <EmploymentTypeBadge type={row.employmentType} />
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <StatusBadge status={row.employeeStatus} />
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div
+                                                    className="text-slate-700"
+                                                    style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
+                                                >
+                                                    {formatDate(row.dateOfJoining)}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div
+                                                    className="text-slate-700 flex items-center gap-2"
+                                                    style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
+                                                >
+                                                    {formatDate(
+                                                        row.contractEndDate ||
+                                                        new Date(new Date(row.dateOfJoining).setFullYear(new Date(row.dateOfJoining).getFullYear() + 1)).toISOString().split('T')[0]
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <ActionButtons row={row} onActionClick={onActionClick} />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                    
+                    <Emp_Each isOpen={isOpen} onClose={() => setIs_Open(false)}  />
+                    {/* simple pagination controls */}
+                    {filteredData.length > rowsPerPage && (
+                        <div className="flex text-sm items-center justify-between px-6 py-4 bg-gray-50">
+                            <div>
+                                Showing {paginatedData.length} of {filteredData.length}
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                    disabled={currentPage === 1}
+                                    className="px-3 py-1 bg-white border border-gray-300 rounded disabled:opacity-50"
+                                >
+                                    Previous
+                                </button>
+                                <span className="px-2">
+                                    {currentPage} / {totalPages}
+                                </span>
+                                <button
+                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="px-3 py-1 bg-white border border-gray-300 rounded disabled:opacity-50"
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* FOOTER NOTE */}
@@ -981,3 +920,172 @@ export const RecruitmentTable = () => {
         </div>
     );
 };
+
+
+
+
+
+
+
+
+const Emp_Each = ({ isOpen, onClose }) => {
+  const employee = {
+    employeeId: "EMP-101",
+    firstName: "John",
+    lastName: "Smith",
+    officeEmail: "john.smith@company.com",
+    officeMobile: "+1 (555) 123-4567",
+    department: "Engineering",
+    designation: "Senior Developer",
+    employmentType: "Permanent",
+    employeeStatus: "Active",
+    dateOfJoining: "2023-03-15",
+    contractEndDate: "2026-03-15"
+  };
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [onClose]);
+
+  if (!isOpen) return null;
+
+   return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+      {/* Animated Backdrop */}
+      <div 
+        className="absolute inset-0 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300"
+        onClick={onClose}
+      />
+
+      {/* Modal Content */}
+      <div 
+        className="relative w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-4 duration-300"
+        style={{ fontFamily: "'Roboto Slab', serif" }}
+      >
+        {/* Dynamic Accent Header */}
+        <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 opacity-10" />
+        
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-6 right-6 p-2 rounded-full text-slate-400 hover:text-orange-600 hover:bg-orange-50 transition-all z-20"
+        >
+          <X size={24} />
+        </button>
+
+        <div className="relative pt-12 pb-10 px-8 sm:px-12">
+          
+          {/* Identity Header */}
+          <div className="flex flex-col items-center sm:flex-row sm:items-end gap-6 mb-10">
+            <div className="relative">
+              <div className="w-28 h-28 bg-white rounded-3xl flex items-center justify-center border-4 border-white shadow-xl">
+                <div className="w-full h-full rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-400 flex items-center justify-center text-white">
+                  <User size={48} strokeWidth={1.5} />
+                </div>
+              </div>
+              <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-emerald-500 border-4 border-white rounded-full" title="Active Status" />
+            </div>
+
+            <div className="text-center sm:text-left">
+              <h2 
+                className="text-3xl font-semibold text-slate-800 tracking-tight"
+                style={{ fontWeight: 600 }}
+              >
+                {employee.firstName} {employee.lastName}
+              </h2>
+              <p className="text-orange-600 font-medium text-lg mt-1 tracking-wide">
+                {employee.designation}
+              </p>
+              <div className="flex items-center justify-center sm:justify-start gap-3 mt-2">
+                <span className="flex items-center gap-1 text-slate-500 text-sm">
+                  <Building2 size={14} /> {employee.department}
+                </span>
+                <span className="w-1 h-1 bg-slate-300 rounded-full" />
+                <span className="flex items-center gap-1 text-slate-500 text-sm">
+                  <MapPin size={14} /> {employee.location}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Details Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 py-8 border-y border-slate-100">
+            
+            <DetailItem 
+              icon={<IdCard className="text-amber-500" size={20} />}
+              label="Employee ID"
+              value={employee.employeeId}
+            />
+
+            <DetailItem 
+              icon={<Globe className="text-orange-500" size={20} />}
+              label="Employment Type"
+              value={employee.employmentType}
+            />
+
+            <DetailItem 
+              icon={<Mail className="text-amber-500" size={20} />}
+              label="Office Email"
+              value={employee.officeEmail}
+            />
+
+            <DetailItem 
+              icon={<Phone className="text-orange-500" size={20} />}
+              label="Office Mobile"
+              value={employee.officeMobile}
+            />
+
+            <DetailItem 
+              icon={<Calendar className="text-amber-500" size={20} />}
+              label="Date of Joining"
+              value={employee.dateOfJoining}
+            />
+
+            <DetailItem 
+              icon={<Calendar className="text-orange-500" size={20} />}
+              label="Contract End Date"
+              value={employee.contractEndDate}
+            />
+
+          </div>
+
+          {/* Action Footer */}
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
+            <button className="flex-1 cursor-pointer min-w-[140px] py-3 bg-white border-2 border-slate-200 hover:border-amber-500 text-slate-700 font-semibold rounded-2xl transition-all">
+              Download Profile
+            </button>
+            <button className="flex-1 cursor-pointer min-w-[140px] py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-2xl shadow-lg shadow-slate-200 transition-all">
+             Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Sub-component for clean organization
+const DetailItem = ({ icon, label, value }) => (
+  <div className="flex items-start gap-4 group">
+    <div className="mt-1 p-2 bg-slate-50 rounded-lg group-hover:bg-amber-50 transition-colors">
+      {icon}
+    </div>
+    <div className="flex flex-col">
+      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] mb-1">
+        {label}
+      </span>
+      <span 
+        className="text-slate-700 text-sm font-semibold"
+        style={{ fontWeight: 600 }}
+      >
+        {value}
+      </span>
+    </div>
+  </div>
+);
+
+

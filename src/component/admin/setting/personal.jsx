@@ -208,9 +208,9 @@ export const Personal = () => {
 
           {/* Employee Count Card */}
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 lg:p-4 md:p-4 p-2">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-amber-50 rounded-lg">
-                <Users className="w-6 h-6 text-amber-600" />
+              <div className="flex items-center gap-3">
+              <div className="w-5 h-5 bg-amber-100 rounded-lg flex items-center justify-center">
+                <Users className="w-5 h-5 text-amber-600" />
               </div>
               <div>
                 <p className="text-sm text-slate-500">Total Employees</p>
@@ -270,20 +270,24 @@ export const Personal = () => {
                           transition-all duration-300
                           flex items-center justify-center">
                           <div className="opacity-0 group-hover:opacity-100
-                            transition-opacity duration-300
-                            bg-white p-3 rounded-full shadow-lg">
-                            <Camera className="w-6 h-6 text-amber-600" />
-                          </div>
+                              transition-opacity duration-300
+                              bg-white p-3 rounded-full shadow-lg">
+                              <div className="w-5 h-5 bg-amber-100 rounded-lg flex items-center justify-center">
+                                <Camera className="w-5 h-5 text-amber-600" />
+                              </div>
+                            </div>
                         </div>
 
                         {/* Change Photo Badge */}
-                        <div
+                          <div
                           className="absolute -bottom-4 left-1/2 -translate-x-1/2
                             bg-white px-4 py-2
                             rounded-full border border-amber-300 shadow-sm
                             flex items-center gap-2"
                         >
-                          <Upload className="w-4 h-4 text-amber-600" />
+                          <div className="w-5 h-5 bg-amber-100 rounded-lg flex items-center justify-center">
+                            <Upload className="w-5 h-5 text-amber-600" />
+                          </div>
                           <span className="text-sm font-medium text-slate-700">
                             Change Photo
                           </span>
@@ -311,16 +315,18 @@ export const Personal = () => {
                 {/* Basic Information */}
                 <div className="w-full space-y-6">
                   <div className="text-center mb-4">
-                    <h2 className="text-2xl font-bold text-slate-800 mb-1">
-                      {profile.fullName}
-                    </h2>
-                    <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-100 to-orange-100 px-4 py-2 rounded-full">
-                      <Shield className="w-4 h-4 text-amber-700" />
-                      <span className="text-sm font-semibold text-amber-800">
-                        {profile.role}
-                      </span>
-                    </div>
-                  </div>
+                                    <h2 className="text-2xl font-bold text-slate-800 mb-1">
+                                      {profile.fullName}
+                                    </h2>
+                                    <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-100 to-orange-100 px-4 py-2 rounded-full">
+                                      <div className="w-5 h-5 bg-amber-100 rounded-lg flex items-center justify-center">
+                                        <Shield className="w-4 h-4 text-amber-600" />
+                                      </div>
+                                      <span className="text-sm font-semibold text-amber-800">
+                                        {profile.role}
+                                      </span>
+                                    </div>
+                                  </div>
 
                   <InfoCard
                     icon={User}
@@ -356,37 +362,37 @@ export const Personal = () => {
                     <SocialIcon
                       icon={Facebook}
                       url={profile.facebook}
-                      color={socialColors.facebook}
+                      colorName="blue"
                       label="Facebook"
                     />
                     <SocialIcon
                       icon={Twitter}
                       url={profile.twitter}
-                      color={socialColors.twitter}
+                      colorName="sky"
                       label="Twitter"
                     />
                     <SocialIcon
                       icon={Linkedin}
                       url={profile.linkedin}
-                      color={socialColors.linkedin}
+                      colorName="blue"
                       label="LinkedIn"
                     />
                     <SocialIcon
                       icon={Instagram}
                       url={profile.instagram}
-                      color={socialColors.instagram}
+                      colorName="pink"
                       label="Instagram"
                     />
                     <SocialIcon
                       icon={Youtube}
                       url={profile.youtube}
-                      color={socialColors.youtube}
+                      colorName="red"
                       label="YouTube"
                     />
                     <SocialIcon
                       icon={MessageCircle}
                       url={`https://wa.me/${profile.whatsapp.replace(/\D/g, '')}`}
-                      color={socialColors.whatsapp}
+                      colorName="emerald"
                       label="WhatsApp"
                     />
                   </div>
@@ -419,7 +425,9 @@ export const Personal = () => {
 
                   <div>
                     <label className="text-sm font-medium text-slate-700 flex items-center gap-2 mb-2">
-                      <User className="w-4 h-4 text-amber-600" />
+                      <div className="w-5 h-5 bg-amber-100 rounded-lg flex items-center justify-center">
+                        <User className="w-5 h-5 text-amber-600" />
+                      </div>
                       Gender (Optional)
                     </label>
                     <select
@@ -521,7 +529,7 @@ export const Personal = () => {
               </Section>
 
               {/* Professional Section */}
-              <Section title="Professional Information" icon={Shield} className="mt-8">
+              {/* <Section title="Professional Information" icon={Shield} className="mt-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Input
                     label="Admin ID"
@@ -552,7 +560,7 @@ export const Personal = () => {
                     </select>
                   </div>
                 </div>
-              </Section>
+              </Section> */}
 
               {/* Social Media Section */}
               <Section title="Social Media Links" icon={Globe} className="mt-8">
@@ -626,7 +634,9 @@ export const Personal = () => {
                   onClick={handleDiscardChanges}
                   disabled={uploading}
                 >
-                  <X className="w-4 h-4" />
+                  <div className="w-5 h-5 bg-slate-100 rounded-lg flex items-center justify-center">
+                    <X className="w-5 h-5 text-slate-600" />
+                  </div>
                   Discard Changes
                 </button>
                 <button
@@ -636,7 +646,9 @@ export const Personal = () => {
                   onClick={handleUpdateProfile}
                   disabled={uploading}
                 >
-                  <Save className="w-4 h-4" />
+                  <div className="w-5 h-5 bg-amber-100 rounded-lg flex items-center justify-center">
+                    <Save className="w-5 h-5 text-amber-600" />
+                  </div>
                   Update Profile
                 </button>
               </div>
@@ -653,9 +665,9 @@ export const Personal = () => {
 const Section = ({ title, icon: Icon, children, className = "" }) => (
   <div className={className}>
     <div className="flex items-center gap-3 mb-6">
-      <div className="p-2 bg-amber-100 rounded-lg">
-        <Icon className="w-5 h-5 text-amber-600" />
-      </div>
+        <div className="w-5 h-5 bg-amber-100 rounded-lg flex items-center justify-center">
+          <Icon className="w-5 h-5 text-amber-600" />
+        </div>
       <h3 className="text-xl font-semibold text-slate-800">{title}</h3>
     </div>
     {children}
@@ -665,7 +677,9 @@ const Section = ({ title, icon: Icon, children, className = "" }) => (
 const Input = ({ label, icon: Icon, type = "text", required = false, optional = false, disabled = false, ...props }) => (
   <div className="space-y-2">
     <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
-      <Icon className="w-4 h-4 text-amber-600" />
+      <div className="w-5 h-5 bg-amber-100 rounded-lg flex items-center justify-center">
+        <Icon className="w-5 h-5 text-amber-600" />
+      </div>
       {label}
       {required && <span className="text-red-500">*</span>}
       {optional && <span className="text-slate-400 text-xs">(Optional)</span>}
@@ -684,11 +698,11 @@ const Input = ({ label, icon: Icon, type = "text", required = false, optional = 
   </div>
 );
 
-const InfoCard = ({ icon: Icon, label, value }) => (
+const InfoCard = ({ icon: Icon, label, value, colorName = "amber" }) => (
   <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
     <div className="flex items-center gap-3">
-      <div className="p-2 bg-amber-50 border border-amber-100 rounded-lg">
-        <Icon className="w-5 h-5 text-amber-600" />
+      <div className={`w-5 h-5 bg-${colorName}-100 rounded-lg flex items-center justify-center`}>
+        <Icon className={`w-5 h-5 text-${colorName}-600`} />
       </div>
       <div>
         <p className="text-xs text-slate-500">{label}</p>
@@ -698,7 +712,7 @@ const InfoCard = ({ icon: Icon, label, value }) => (
   </div>
 );
 
-const SocialIcon = ({ icon: Icon, url, color, label }) => (
+const SocialIcon = ({ icon: Icon, url, colorName = "amber", label }) => (
   <Link
     to={url}
     target="_blank"
@@ -707,11 +721,8 @@ const SocialIcon = ({ icon: Icon, url, color, label }) => (
       rounded-xl hover:shadow-md transition-all group relative"
     title={label}
   >
-    <div
-      className="w-8 h-8 flex items-center justify-center rounded-lg group-hover:scale-110 transition-transform"
-      style={{ backgroundColor: `${color}15` }}
-    >
-      <Icon className="w-5 h-5" style={{ color: color }} />
+    <div className={`w-8 h-8 flex items-center justify-center rounded-lg group-hover:scale-110 transition-transform bg-${colorName}-100`}>
+      <Icon className={`w-5 h-5 text-${colorName}-600`} />
     </div>
   </Link>
 );

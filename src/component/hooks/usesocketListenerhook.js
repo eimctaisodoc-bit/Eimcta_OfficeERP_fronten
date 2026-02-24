@@ -1,54 +1,61 @@
-import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { socket } from "../../socket_client/scoket";
+// useOnlineUsers.js
+import { useEffect, useState } from "react";
+import socket from "../../socket_client/scoket";
 
-export const useSocketListeners = () => {
-  const queryClient = useQueryClient();
+export const useOnlineUsers = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // useEffect(() => {
-  //   // 1. Get the actual user object and the STRING token
-  //   const userStr = sessionStorage.getItem("user");
-  //   // CHANGE THIS: 'isToken' is a boolean flag. Get the actual JWT string key!
-  //   const token = sessionStorage.getItem("isToken"); 
+  useEffect(() => {
+    const token = sessionStorage.getItem("Token");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
 
-  //   if (!socket || !userStr || !token) {
-  //     console.warn("🔌 Socket: Missing user or token. Connection skipped.");
-  //     return;
-  //   }
+    // Attach token
+    socket.auth = { token };
 
-  //   const currentUser = JSON.parse(userStr);
+    // Connect if not connected
+    if (!socket.connected) {
+      socket.connect();
+    }
 
-  //   // 2. Prevent double connection if already active
-  //   if (socket.connected) return;
+    // ----- EVENT HANDLERS -----
 
-  //   // 3. Set the REAL token in auth
-  //   socket.auth = { token };
+    const handleUserStatus = (data) => {
+      console.log("📡 Users received:", data);
 
-  //   const onConnect = () => {
-  //     console.log("✅ Socket Connected:", socket.id);
-  //     queryClient.setQueryData(["socketStatus"], "connected");
-  //   };
+      // Convert Map entries to clean array
+      // Backend sends: [ [id, {name, ...}], ... ]
+      const formattedUsers = data.map(([id, user]) => ({
+        id,
+        ...user,
+      }));
 
-  //   const onConnectError = (err) => {
-  //     console.error("❌ Socket Auth Error:", err.message);
-  //     // If it says 'Unauthorized', it means the token string is invalid/expired
-  //   };
+      setUsers(formattedUsers);
+      setLoading(false);
+    };
 
-  //   const onDisconnect = (reason) => {
-  //     console.log("🔌 Disconnected:", reason);
-  //     queryClient.setQueryData(["socketStatus"], "disconnected");
-  //   };
+    const handleDisconnect = () => {
+      console.log("🔌 Socket disconnected");
+      setUsers([]);
+    };
 
-  //   socket.on("connect", onConnect);
-  //   socket.on("connect_error", onConnectError);
-  //   socket.on("disconnect", onDisconnect);
+    // Remove old listeners (important)
+    socket.off("user:status", handleUserStatus);
+    socket.off("disconnect", handleDisconnect);
 
-  //   socket.connect();
+    // Attach listeners
+    socket.on("user:status", handleUserStatus);
+    socket.on("disconnect", handleDisconnect);
 
-  //   return () => {
-  //     socket.off("connect", onConnect);
-  //     socket.off("connect_error", onConnectError);
-  //     socket.off("disconnect", onDisconnect);
-  //   };
-  // }, []); 
+    // Cleanup
+    return () => {
+      socket.off("user:status", handleUserStatus);
+      socket.off("disconnect", handleDisconnect);
+    };
+  }, []);
+
+  return { users, loading };
 };

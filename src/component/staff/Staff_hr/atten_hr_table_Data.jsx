@@ -1,6 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
 import Select from 'react-select';
-import DataTable from "react-data-table-component";
 import {
   Eye,
   Edit2,
@@ -23,19 +22,7 @@ import LeaveManagementForm from "./leave_,mgt_client";
 // import Attend_Mgt_Client_form from "../attend_mgt_client";
 
 
-/* =======================
-   FIELD DEFINITIONS
-======================= */
-const attendanceTableFields = [
-  "attendance_id",
-  "employee_id",
-  "attendance_date",
-  "check_in_time",
-  "check_out_time",
-  "attendance_mode",
-  "attendance_status",
-  "total_working_hours"
-];
+
 
 /* =======================
    STATUS OPTIONS FOR SELECT
@@ -171,113 +158,7 @@ const ActionButtons = ({ row, onActionClick }) => {
 };
 
 
-/* =======================
-   COLUMNS
-======================= */
-const generateColumns = ({ onActionClick }) => [
-  {
-    name: <span className="font-bold text-black">Employee</span>,
-    selector: row => row.employee_id,
-    sortable: true,
-    cell: row => (
-      <div className="relative group flex items-center gap-3">
-        <img
-          src={row.avatar || "/default-avatar.png"}
-          alt={row.employee_name}
-          className="w-8 h-8 rounded-full object-cover border border-slate-200 cursor-pointer"
-        />
-        <span className="font-medium text-black cursor-pointer">
-          {row.employee_id}
-        </span>
-        <div className="
-      absolute left-0 top-10 z-50
-      hidden group-hover:block
-      bg-white shadow-xl border border-slate-200
-      rounded-lg p-3 w-56
-    ">
-          <div className="flex items-center gap-3">
-            <img
-              src={row.avatar || "/default-avatar.png"}
-              alt={row.employee_name}
-              className="w-10 h-10 rounded-full object-cover"
-            />
-            <div>
-              <p className="text-sm font-semibold text-black">
-                {row.employee_name}
-              </p>
-              <p className="text-xs text-slate-500">
-                ID: {row.employee_id}
-              </p>
-            </div>
-          </div>
 
-          <div className="mt-2 text-xs text-slate-600 space-y-1">
-            <p><span className="font-medium">Department:</span> {row.department}</p>
-            <p><span className="font-medium">Role:</span> {row.designation}</p>
-            <p><span className="font-medium">Status:</span> {row.status}</p>
-          </div>
-        </div>
-
-      </div>
-    ),
-    minWidth: "200px"
-  },
-  {
-    name: <span className="font-bold text-black">Date</span>,
-    selector: row => row.attendance_date,
-    sortable: true,
-    cell: row => (
-      <div className="text-black">
-        {formatDate(row.attendance_date)}
-      </div>
-    ),
-    minWidth: "140px"
-  },
-  {
-    name: <span className="font-bold text-black">Check In</span>,
-    selector: row => row.check_in_time,
-    cell: row => (
-      <div className="text-black">
-        {formatTime(row.check_in_time)}
-      </div>
-    ),
-    minWidth: "120px"
-  },
-  {
-    name: <span className="font-bold text-black">Check Out</span>,
-    selector: row => row.check_out_time,
-    cell: row => (
-      <div className="text-black">
-        {formatTime(row.check_out_time)}
-      </div>
-    ),
-    minWidth: "120px"
-  },
-  {
-    name: <span className="font-bold text-black">Total Hours</span>,
-    selector: row => row.total_working_hours,
-    sortable: true,
-    cell: row => (
-      <div className="font-medium text-black">
-        {row.total_working_hours}
-      </div>
-    ),
-    minWidth: "130px"
-  },
-  {
-    name: <span className="font-bold text-black">Status</span>,
-    selector: row => row.attendance_status,
-    sortable: true,
-    cell: row => <StatusBadge status={row.attendance_status} />,
-    minWidth: "140px"
-  },
-  {
-    name: <span className="font-bold text-black">Actions</span>,
-    cell: row => (<ActionButtons onActionClick={onActionClick} />),
-    ignoreRowClick: true,
-    minWidth: "180px"
-  }
-];
 
 /* =======================
    SAMPLE DATA
@@ -348,44 +229,7 @@ const attendanceData = [
 /* =======================
    CUSTOM STYLES FOR DATATABLE
 ======================= */
-const customStyles = {
-  headCells: {
-    style: {
-      padding: "16px 20px",
-      backgroundColor: "#f8fafc",
-      borderBottom: "1px solid #e2e8f0",
-      fontWeight: "bold",
-      fontSize: "14px",
-      color: "#000000",
-    },
-  },
-  cells: {
-    style: {
-      padding: "20px",
-      fontSize: "14px",
-      color: "#000000",
-      borderBottom: "1px solid #f1f5f9",
-    },
-  },
-  rows: {
-    style: {
-      backgroundColor: "#ffffff",
-      "&:hover": {
-        backgroundColor: "#f8fafc",
-      },
-    },
-    highlightOnHoverStyle: {
-      backgroundColor: "#f1f5f9",
-    },
-  },
-  pagination: {
-    style: {
-      borderTop: "1px solid #e2e8f0",
-      padding: "16px 20px",
-      fontSize: "14px",
-    },
-  },
-};
+
 
 /* =======================
    CUSTOM STYLES FOR REACT-SELECT
@@ -494,7 +338,20 @@ const Attend_HR_Data_Table = () => {
     });
   }, [search, selectedStatus]);
 
-  const columns = useMemo(() => generateColumns({ onActionClick: onActionClick }), []);
+  // pagination state and data
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, selectedStatus]);
+
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * rowsPerPage;
+    return filteredData.slice(start, start + rowsPerPage);
+  }, [filteredData, currentPage]);
+
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
   return (
     <div className="p-6 min-h-screen relative">
@@ -669,24 +526,114 @@ const Attend_HR_Data_Table = () => {
 
         {/* TABLE CONTAINER */}
         <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-          <DataTable
-            columns={columns}
-            data={filteredData}
-            pagination
-            paginationPerPage={10}
-            paginationRowsPerPageOptions={[5, 10, 15, 20]}
-            highlightOnHover
-            responsive
-            dense
-            customStyles={customStyles}
-            noDataComponent={
-              <div className="py-12 text-center">
-                <div className="text-slate-400 mb-2">No attendance records found</div>
-                <p className="text-slate-500">Try adjusting your search or filters</p>
-              </div>
-            }
-          />
+          <table className="min-w-full divide-y divide-slate-200">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Employee</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Check In</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Check Out</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Total Hours</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-slate-200">
+              {paginatedData.length > 0 ? (
+                paginatedData.map(row => (
+                  <tr key={row.attendance_id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="relative group flex items-center gap-3">
+                        <img
+                          src={row.avatar || "/default-avatar.png"}
+                          alt={row.employee_name}
+                          className="w-8 h-8 rounded-full object-cover border border-slate-200 cursor-pointer"
+                        />
+                        <span className="font-medium text-black cursor-pointer">
+                          {row.employee_id}
+                        </span>
+                        <div className="
+      absolute left-0 top-10 z-50
+      hidden group-hover:block
+      bg-white shadow-xl border border-slate-200
+      rounded-lg p-3 w-56
+    ">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={row.avatar || "/default-avatar.png"}
+                              alt={row.employee_name}
+                              className="w-10 h-10 rounded-full object-cover"
+                            />
+                            <div>
+                              <p className="text-sm font-semibold text-black">
+                                {row.employee_name}
+                              </p>
+                              <p className="text-xs text-slate-500">
+                                ID: {row.employee_id}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="mt-2 text-xs text-slate-600 space-y-1">
+                            <p><span className="font-medium">Department:</span> {row.department}</p>
+                            <p><span className="font-medium">Role:</span> {row.designation}</p>
+                            <p><span className="font-medium">Status:</span> {row.status}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-black">{formatDate(row.attendance_date)}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-black">{formatTime(row.check_in_time)}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-black">{formatTime(row.check_out_time)}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="font-medium text-black">{row.total_working_hours}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <StatusBadge status={row.attendance_status} />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <ActionButtons onActionClick={onActionClick} />
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" className="py-12 text-center text-slate-400">
+                    No attendance records found. Try adjusting your search or filters.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
+        {/* pagination controls */}
+        {filteredData.length > rowsPerPage && (
+          <div className="flex items-center justify-between mt-4 px-4">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 bg-white border border-slate-200 rounded-md hover:bg-slate-50 disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-slate-600">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 bg-white border border-slate-200 rounded-md hover:bg-slate-50 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
 
         {/* FOOTER NOTE */}
         <div className="mt-6 text-sm text-slate-500 text-center">

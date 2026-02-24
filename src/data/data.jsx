@@ -48,8 +48,9 @@ const menus = {
         { name: "Dashboard", path: "/staff/report", icon: LayoutDashboard },
         { name: "HR Management", path: "/staff/hr", icon: Users },
         { name: "Finance", path: "/staff/finance", icon: CreditCard },
+           { name: "Sales", path: "/staff/sales", icon: BarChart3 },
         { name: "Tasks", path: "/staff/tasks", icon: ClipboardList },
-        { name: "Attendance", path: "/staff/attendance", icon: ClipboardList },
+        // { name: "Attendance", path: "/staff/attendance", icon: ClipboardList },
         { name: "Settings", path: "/staff/settings", icon: User },
     ],
 };

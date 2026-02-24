@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { ScheduleXCalendar, useCalendarApp } from "@schedule-x/react";
 import {
   createViewDay,
@@ -23,7 +23,10 @@ const formatHHMM = (hhmm) => {
 };
 
 export default function MyCalendar({ onclose }) {
-  const eventsService = useState(() => createEventsServicePlugin())[0];
+  // Initialize events service
+  const eventsService = useMemo(() => createEventsServicePlugin(), []);
+  
+  // State for events
   const [events, setEvents] = useState([]);
   const [calendarTitle, setCalendarTitle] = useState("EIMCTA Calendar");
   const [calendarDescription, setCalendarDescription] = useState("Manage your events and appointments");
@@ -45,6 +48,94 @@ export default function MyCalendar({ onclose }) {
   const [startTime, setStartTime] = useState("10:30");
   const [endTime, setEndTime] = useState("11:30");
   const [error, setError] = useState("");
+
+  // Initialize calendar with events service
+  const calendarApp = useCalendarApp({
+    views: [createViewDay(), createViewWeek(), createViewMonthGrid()],
+    weekOptions: { gridHeight: 1200 },
+    plugins: [eventsService],
+    timezone: TZ,
+    callbacks: { 
+      onEventClick: (event) => setSelectedEvent(event) 
+    },
+    calendars: {
+      amberTheme: {
+        colorName: "amber",
+        lightColors: { main: "#f59e0b", container: "#fef3c7", onContainer: "#92400e" },
+      },
+    },
+  });
+
+  // Load initial events from localStorage or set default events
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        // Try to load from localStorage first
+        const savedEvents = localStorage.getItem('calendarEvents');
+        if (savedEvents) {
+          const parsedEvents = JSON.parse(savedEvents);
+          // Convert string dates back to Temporal objects
+          const eventsToAdd = parsedEvents.map(event => ({
+            ...event,
+            start: Temporal.ZonedDateTime.from(event.start),
+            end: Temporal.ZonedDateTime.from(event.end)
+          }));
+          
+          // Add events to service and state
+          eventsToAdd.forEach(event => {
+            eventsService.add(event);
+          });
+          setEvents(eventsToAdd);
+        } else {
+          // Add some default events if no saved events
+          const defaultEvents = [
+            {
+              id: crypto.randomUUID(),
+              title: "Team Meeting (10:30 AM - 11:30 AM)",
+              description: "Weekly team sync",
+              start: toZdt(today, "10:30"),
+              end: toZdt(today, "11:30"),
+              calendarId: "amberTheme",
+            },
+            {
+              id: crypto.randomUUID(),
+              title: "Lunch Break (12:00 PM - 1:00 PM)",
+              description: "",
+              start: toZdt(today, "12:00"),
+              end: toZdt(today, "13:00"),
+              calendarId: "amberTheme",
+            }
+          ];
+          
+          defaultEvents.forEach(event => {
+            eventsService.add(event);
+          });
+          setEvents(defaultEvents);
+          localStorage.setItem('calendarEvents', JSON.stringify(defaultEvents.map(e => ({
+            ...e,
+            start: e.start.toString(),
+            end: e.end.toString()
+          }))));
+        }
+      } catch (error) {
+        console.error("Error loading events:", error);
+      }
+    };
+
+    loadEvents();
+  }, [eventsService, today]);
+
+  // Save events to localStorage whenever they change
+  useEffect(() => {
+    if (events.length > 0) {
+      const eventsToSave = events.map(event => ({
+        ...event,
+        start: event.start.toString(),
+        end: event.end.toString()
+      }));
+      localStorage.setItem('calendarEvents', JSON.stringify(eventsToSave));
+    }
+  }, [events]);
 
   const resetForm = () => {
     setTitle("");
@@ -108,9 +199,11 @@ export default function MyCalendar({ onclose }) {
       };
 
       if (isEditMode && selectedEvent) {
+        // Update existing event
         eventsService.update(eventData);
         setEvents((prev) => prev.map((e) => (e.id === eventData.id ? eventData : e)));
       } else {
+        // Add new event
         eventsService.add(eventData);
         setEvents((prev) => [...prev, eventData]);
       }
@@ -123,19 +216,11 @@ export default function MyCalendar({ onclose }) {
     }
   };
 
-  const calendarApp = useCalendarApp({
-    views: [createViewDay(), createViewWeek(), createViewMonthGrid()],
-    weekOptions: { gridHeight: 1200 },
-    plugins: [eventsService],
-    timezone: TZ,
-    callbacks: { onEventClick: (event) => setSelectedEvent(event) },
-    calendars: {
-      amberTheme: {
-        colorName: "amber",
-        lightColors: { main: "#f59e0b", container: "#fef3c7", onContainer: "#92400e" },
-      },
-    },
-  });
+  const deleteEvent = (eventId) => {
+    eventsService.remove(eventId);
+    setEvents((prev) => prev.filter((e) => e.id !== eventId));
+    setSelectedEvent(null);
+  };
 
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
@@ -188,14 +273,28 @@ export default function MyCalendar({ onclose }) {
             <div className="absolute bottom-10 right-10 w-72 bg-white rounded-xl shadow-2xl border border-amber-100 p-4 z-40">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="font-bold text-slate-900">Details</h3>
-                <button onClick={() => setSelectedEvent(null)} className="text-slate-400">✕</button>
+                <button onClick={() => setSelectedEvent(null)} className="text-slate-400 hover:text-slate-600">
+                  ✕
+                </button>
               </div>
               <div className="space-y-2 text-sm">
                 <p className="font-medium text-amber-700">{selectedEvent.title}</p>
-                {selectedEvent.description && <p className="text-slate-500 italic">{selectedEvent.description}</p>}
+                {selectedEvent.description && (
+                  <p className="text-slate-500 italic">{selectedEvent.description}</p>
+                )}
                 <div className="flex gap-2 pt-2">
-                  <button onClick={() => openEditModal(selectedEvent)} className="flex-1 py-1.5 rounded-lg bg-amber-100 text-amber-700 text-xs font-bold">Edit</button>
-                  <button onClick={() => { eventsService.remove(selectedEvent.id); setSelectedEvent(null); }} className="flex-1 py-1.5 rounded-lg bg-red-50 text-red-600 text-xs font-bold">Delete</button>
+                  <button 
+                    onClick={() => openEditModal(selectedEvent)} 
+                    className="flex-1 py-1.5 rounded-lg bg-amber-100 text-amber-700 text-xs font-bold hover:bg-amber-200 transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button 
+                    onClick={() => deleteEvent(selectedEvent.id)} 
+                    className="flex-1 py-1.5 rounded-lg bg-red-50 text-red-600 text-xs font-bold hover:bg-red-100 transition-colors"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </div>
@@ -205,74 +304,162 @@ export default function MyCalendar({ onclose }) {
 
       {/* Form Modal */}
       {isOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="text-lg font-bold mb-4">{isEditMode ? "Edit Event" : "New Event"}</h3>
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-[60] p-4 font-roboto">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-slate-100">
+            {/* Header with Icon */}
+            <div className="flex items-center gap-2 mb-6">
+              <div className="p-2 bg-amber-100 rounded-xl">
+                {isEditMode ? (
+                  <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                )}
+              </div>
+              <h3 className="text-xl font-bold text-slate-800">
+                {isEditMode ? "Edit Event" : "Create New Event"}
+              </h3>
+            </div>
 
-            <div className="space-y-4">
-              <input
-                placeholder="Title"
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-                className="w-full p-2 border rounded-lg outline-amber-500"
-              />
-              <textarea
-                placeholder="Description"
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-                className="w-full p-2 border rounded-lg outline-amber-500 h-20"
-              />
+            <div className="space-y-5">
+              {/* Title Input with Icon */}
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                  </svg>
+                </div>
+                <input
+                  placeholder="Event title"
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all bg-slate-50/50 text-slate-700 placeholder:text-slate-400"
+                />
+              </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-500 ml-1">FROM</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={e => setStartDate(e.target.value)}
-                    className="p-2 border rounded-lg text-sm"
-                  />
-                  <input
-                    type="time"
-                    value={startTime}
-                    onChange={e => setStartTime(e.target.value)}
-                    className="p-2 border rounded-lg text-sm"
-                  />
+              {/* Description Input with Icon */}
+              <div className="relative">
+                <div className="absolute left-3 top-3 text-slate-400">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+                  </svg>
+                </div>
+                <textarea
+                  placeholder="Add description (optional)"
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all bg-slate-50/50 text-slate-700 placeholder:text-slate-400 h-24 resize-none"
+                />
+              </div>
+
+              {/* FROM Section */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 ml-1">
+                  <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">From</span>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={e => setStartDate(e.target.value)}
+                      className="w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-slate-700 bg-slate-50/50"
+                    />
+                  </div>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="time"
+                      value={startTime}
+                      onChange={e => setStartTime(e.target.value)}
+                      className="w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-slate-700 bg-slate-50/50"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-500 ml-1">TO</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={e => setEndDate(e.target.value)}
-                    className="p-2 border rounded-lg text-sm"
-                  />
-                  <input
-                    type="time"
-                    value={endTime}
-                    onChange={e => setEndTime(e.target.value)}
-                    className="p-2 border rounded-lg text-sm"
-                  />
+              {/* TO Section */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 ml-1">
+                  <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">To</span>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="date"
+                      value={endDate}
+                      onChange={e => setEndDate(e.target.value)}
+                      className="w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-slate-700 bg-slate-50/50"
+                    />
+                  </div>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="time"
+                      value={endTime}
+                      onChange={e => setEndTime(e.target.value)}
+                      className="w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-slate-700 bg-slate-50/50"
+                    />
+                  </div>
                 </div>
               </div>
 
-              {error && <p className="text-red-500 text-xs">{error}</p>}
+              {/* Error Message with Icon */}
+              {error && (
+                <div className="flex items-center gap-2 p-3 bg-red-50 rounded-xl border border-red-100">
+                  <svg className="w-4 h-4 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p className="text-xs text-red-600">{error}</p>
+                </div>
+              )}
 
-              <div className="flex gap-2 pt-4">
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4">
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="flex-1 py-2 border rounded-xl hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-slate-600 font-medium flex items-center justify-center gap-2 group"
                 >
+                  <svg className="w-4 h-4 text-slate-400 group-hover:text-slate-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                   Cancel
                 </button>
                 <button
                   onClick={saveEvent}
-                  className="flex-1 py-2 bg-amber-500 text-white rounded-xl hover:bg-amber-600 transition-colors"
+                  className="flex-1 py-3 bg-amber-500 text-white rounded-xl hover:bg-amber-600 transition-colors font-medium flex items-center justify-center gap-2 shadow-lg shadow-amber-500/25"
                 >
-                  Save
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Save Event
                 </button>
               </div>
             </div>
