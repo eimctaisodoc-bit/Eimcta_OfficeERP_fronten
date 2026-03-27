@@ -42,7 +42,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const LeadHelper = memo(({ onUpdate, data = {} }) => {
+const Proposal = memo(({ onUpdate, data = {} }) => {
     const [isActive, setIsActive] = useState(false);
     const prevDataRef = useRef(null);
 
@@ -394,7 +394,7 @@ const LeadHelper = memo(({ onUpdate, data = {} }) => {
 });
 
 // LeadHelper.displayName = 'LeadHelper';
-export default LeadHelper;
+export default Proposal;
 
 const test = [
     {
@@ -420,9 +420,8 @@ export const SmallModal = ({data, onClick,isdata = true }) => {
     // console.log(data)
     return (
         <>
-
-
-            <div className="flex pb-3 bg-white flex-col justify-between p-5 rounded-2xl border border-slate-200 shadow-sm w-full max-w-md text-[10px] text-slate-900" onClick={onClick}>
+            <div className="flex pb-3 bg-white flex-col justify-between p-5
+             rounded-2xl border border-slate-200 shadow-sm w-full max-w-md text-[10px] text-slate-900" onClick={onClick}>
 
                 <div className="grid grid-cols-2 gap-y-3">
 

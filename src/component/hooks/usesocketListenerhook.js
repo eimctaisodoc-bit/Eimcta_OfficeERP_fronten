@@ -1,61 +1,44 @@
-// useOnlineUsers.js
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import socket from "../../socket_client/scoket";
 
-export const useOnlineUsers = () => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+export const useOnlineUsersSocket = () => {
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const token = sessionStorage.getItem("Token");
-    if (!token) {
-      setLoading(false);
-      return;
-    }
 
-    // Attach token
+    if (!token) return;
+
     socket.auth = { token };
 
-    // Connect if not connected
     if (!socket.connected) {
       socket.connect();
     }
 
-    // ----- EVENT HANDLERS -----
-
     const handleUserStatus = (data) => {
-      console.log("📡 Users received:", data);
+      // console.log("📡 Users received:", data);
 
-      // Convert Map entries to clean array
-      // Backend sends: [ [id, {name, ...}], ... ]
       const formattedUsers = data.map(([id, user]) => ({
         id,
-        ...user,
+        ...user
       }));
 
-      setUsers(formattedUsers);
-      setLoading(false);
+      queryClient.setQueryData(["onlineUsers"], formattedUsers);
     };
 
     const handleDisconnect = () => {
-      console.log("🔌 Socket disconnected");
-      setUsers([]);
+      console.log(" Socket disconnected");
+
+      queryClient.setQueryData(["onlineUsers"], []);
     };
 
-    // Remove old listeners (important)
-    socket.off("user:status", handleUserStatus);
-    socket.off("disconnect", handleDisconnect);
-
-    // Attach listeners
     socket.on("user:status", handleUserStatus);
     socket.on("disconnect", handleDisconnect);
 
-    // Cleanup
     return () => {
       socket.off("user:status", handleUserStatus);
       socket.off("disconnect", handleDisconnect);
     };
-  }, []);
-
-  return { users, loading };
+  }, [queryClient]);
 };

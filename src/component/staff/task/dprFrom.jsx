@@ -21,22 +21,50 @@ import {
   CalendarDays,
   Users,
   BriefcaseIcon,
-  Container
+  Container,
+  PenTool,
+  ClipboardCheck,
+  Signature,
+  Clock3,
+  Map,
+  Download,
+  Printer,
+  Save,
+  CheckSquare,
+  FileSignature,
+  UserCheck,
+  Eye,
+  PenSquare,
+  Award,
+  BookOpen,
+  Presentation,
+  BarChart,
+  Database,
+  Users2,
+  Globe,
+  Target,
+  Layers,
+  CheckCircle,
+  FileOutput,
+  Check,
+  SaveAll
 } from 'lucide-react';
-import Select from 'react-select'
+import Select from 'react-select';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const DprForm = ({ isDpr, setIsDpr }) => {
-  console.log('From dpr', isDpr)
+  console.log('From dpr', isDpr);
+
   // State for Header/General Info
   const [dprInfo, setDprInfo] = useState({
     dprNo: '022',
     dprDate: '2022-12-07',
     employeeName: '',
-    clientName: '',
     contractRef: '',
+    scopeOfServices: '',
     jobCardRef: '',
-    jobType: ''
+    organizationName: 'Everest International Management Consultancy & Training Agency Pvt. Ltd.',
+    registrationNo: '280667/078/079'
   });
 
   // State for Available Jobs
@@ -55,33 +83,85 @@ export const DprForm = ({ isDpr, setIsDpr }) => {
   // State for Checkboxes (Job Categories)
   const [selectedTasks, setSelectedTasks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [otherJobs, setOthersJobs] = useState([])
+  const [otherJobs, setOthersJobs] = useState([]);
 
   // State for Activities Table
   const [activities, setActivities] = useState([
     {
       id: crypto.randomUUID(),
+      sn: 1,
+      timeFrom: '',
+      timeTo: '',
       description: '',
-      actionParty: '',
-      targetDate: '',
-      completionDate: '',
-      delayedDate: '',
-      totalDelay: 0
+      clientLocation: '',
+      entryTime: '',
+      exitTime: '',
+      totalTravelTime: 0,
+      evidence: {
+        jc: false,
+        mom: false,
+        obs: false,
+        af: false
+      }
     }
   ]);
+
+  // State for Signature Section
+  const [signatureInfo, setSignatureInfo] = useState({
+    signature: '',
+    role: 'Consultant',
+    preparedBy: '',
+    reviewedBy: '',
+    approvedBy: '',
+    closingNote: '',
+    consultantAcceptance: '',
+    consultantAcceptanceList: []
+  });
+
+  // State for Evidence Verification
+  const [evidenceVerified, setEvidenceVerified] = useState(false);
+
+  // Predefined time slots
+  const timeSlots = [
+    '9:00 AM – 10:00 AM',
+    '10:00 AM – 11:00 AM',
+    '11:00 AM – 12:00 PM',
+    '12:00 PM – 1:00 PM',
+    '1:00 PM – 2:00 PM',
+    '2:00 PM – 3:00 PM',
+    '3:00 PM – 4:00 PM',
+    '4:00 PM – 5:00 PM',
+    '5:00 PM – 6:00 PM'
+  ];
 
   const taskOptions = [
     "Consultancy", "Audit", "Certification", "Training",
     "Meeting", "Inspection", "Investigation",
     "Management Review Meeting", "Improvement Program",
-    "Document Writing", "Others"
+    "Document Writing", "Document Preparation", "Presentation",
+    "EOMS Observation", "Data Management", "Good Parenting",
+    "Cross Check", "SAC", "UBE", "CPD", "Olympiad",
+    "Presentation MoM", "IOmM", "IOmM Owners"
   ];
 
-  const jobtype = [
-    { value: "All", label: "All Types" },
-    { value: "Permanent", label: "Permanent" },
-    { value: "Contract", label: "Contract" },
-    { value: "Intern", label: "Intern" }
+  const roleOptions = [
+    { value: "Consultant", label: "Consultant" },
+    { value: "Auditor", label: "Auditor" }
+  ];
+
+  const preparedByOptions = [
+    { value: "HR", label: "HR" },
+    { value: "Admin", label: "Admin" }
+  ];
+
+  const reviewedByOptions = [
+    { value: "Operation Manager", label: "Operation Manager" },
+    { value: "HoD", label: "HoD" }
+  ];
+
+  const approvedByOptions = [
+    { value: "MD", label: "MD" },
+    { value: "Province Head", label: "Province Head" }
   ];
 
   // Sample available jobs
@@ -109,7 +189,8 @@ export const DprForm = ({ isDpr, setIsDpr }) => {
     );
   };
 
-  console.log(selectedJob)
+  console.log(selectedJob);
+
   const handleAdd = (val) => {
     const trimmed = val.trim();
     if (!trimmed) return;
@@ -121,24 +202,21 @@ export const DprForm = ({ isDpr, setIsDpr }) => {
 
     setIsModalOpen(false);
   };
-  console.log(isInputEnabled, selectedTasks)
-  const updateActivity = (id, field, value) => {
+
+  // console.log(isInputEnabled, selectedTasks);
+
+  
+
+  const updateEvidence = (id, evidenceType) => {
     setActivities(prev => prev.map(act => {
       if (act.id === id) {
-        const updatedAct = { ...act, [field]: value };
-
-        // Calculate Total Delay if target and completion dates exist
-        if (field === 'targetDate' || field === 'completionDate') {
-          const target = new Date(updatedAct.targetDate);
-          const completion = new Date(updatedAct.completionDate);
-
-          if (!isNaN(target) && !isNaN(completion)) {
-            const diffTime = completion - target;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            updatedAct.totalDelay = diffDays > 0 ? diffDays : 0;
+        return {
+          ...act,
+          evidence: {
+            ...act.evidence,
+            [evidenceType]: !act.evidence[evidenceType]
           }
-        }
-        return updatedAct;
+        };
       }
       return act;
     }));
@@ -147,12 +225,20 @@ export const DprForm = ({ isDpr, setIsDpr }) => {
   const addActivity = () => {
     setActivities([...activities, {
       id: crypto.randomUUID(),
+      sn: activities.length + 1,
+      timeFrom: '',
+      timeTo: '',
       description: '',
-      actionParty: '',
-      targetDate: '',
-      completionDate: '',
-      delayedDate: '',
-      totalDelay: 0
+      clientLocation: '',
+      entryTime: '',
+      exitTime: '',
+      totalTravelTime: 0,
+      evidence: {
+        jc: false,
+        mom: false,
+        obs: false,
+        af: false
+      }
     }]);
   };
 
@@ -162,6 +248,24 @@ export const DprForm = ({ isDpr, setIsDpr }) => {
     }
   };
 
+  // Handle consultant acceptance entry
+  const handleConsultantAcceptanceKeyDown = (e) => {
+    if (e.key === 'Enter' && signatureInfo.consultantAcceptance.trim()) {
+      e.preventDefault();
+      setSignatureInfo(prev => ({
+        ...prev,
+        consultantAcceptanceList: [...prev.consultantAcceptanceList, prev.consultantAcceptance.trim()],
+        consultantAcceptance: ''
+      }));
+    }
+  };
+
+  const removeConsultantAcceptanceItem = (index) => {
+    setSignatureInfo(prev => ({
+      ...prev,
+      consultantAcceptanceList: prev.consultantAcceptanceList.filter((_, i) => i !== index)
+    }));
+  };
 
   const customSelectStyles = () => ({
     container: (base) => ({
@@ -200,64 +304,66 @@ export const DprForm = ({ isDpr, setIsDpr }) => {
   });
 
   // Professional font stack
-  const fontStyle = { fontFamily: "'Roboto', sans-serif" };
-  console.log('DPr', isDpr)
-  if (!isDpr) return
+  const fontStyle = { fontFamily: "'Roboto Slab', serif", fontWeight: 600 };
+  console.log('DPr', isDpr);
+
+  if (!isDpr) return null;
+
   return (
     <AnimatePresence>
-
-
       <motion.div
-    >
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
         {/* Backdrop */}
         <div
-          className={`fixed inset-0 bg-black/80 backdrop:blur-sm transition-opacity duration-300 `}
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-300"
           style={{ zIndex: 9998 }}
-        // onClick={handleClose}
         />
 
         {/* Modal Container */}
         <div
-          className={`fixed inset-0 flex items-center justify-center p-2 sm:p-4 transition-all duration-300 ${false ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
-            }`}
+          className="fixed inset-0 flex items-center justify-center p-2 sm:p-4 transition-all duration-300"
           style={{ zIndex: 9999 }}
         >
-          {/* Modal Content - Your existing component */}
+          {/* Modal Content */}
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-7xl max-h-[95vh] overflow-hidden">
-
             {/* Modal Header */}
             <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-200 bg-white">
               <div className="flex items-center gap-2">
                 <BriefcaseIcon className="w-5 h-5 text-orange-500" />
                 <h2 className="text-lg sm:text-xl font-semibold text-slate-800">Daily Performance Report</h2>
               </div>
-              <button
-                onClick={() => {
-                  setIsDpr(false)
-                }}
-                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-              >
-                <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+              <div className="flex items-center gap-2">
+                <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+                  <Printer className="w-5 h-5 text-slate-500" />
+                </button>
+                <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+                  <Download className="w-5 h-5 text-slate-500" />
+                </button>
+                <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+                  <Save className="w-5 h-5 text-slate-500" />
+                </button>
+                <button
+                  onClick={() => setIsDpr(false)}
+                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 text-slate-500" />
+                </button>
+              </div>
             </div>
 
             {/* Scrollable Content */}
             <div className="overflow-y-auto" style={{ maxHeight: 'calc(95vh - 70px)' }}>
               <div className="p-3 sm:p-4 md:p-6 lg:p-8" style={fontStyle}>
                 <div className="max-w-7xl mx-auto">
-                  {/* Header */}
+                  {/* Organization Header */}
+
+
+                  {/* Header Info */}
                   <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="space-y-1">
-                      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-light tracking-tight text-slate-900">
-                        Daily Performance Report
-                      </h1>
-                      <p className="text-sm sm:text-base text-slate-500 flex items-center gap-2">
-                        <Clock size={16} />
-                        <span>{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                      </p>
-                    </div>
+
                     <div className="flex gap-4 sm:gap-6 bg-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl border border-slate-200 self-start sm:self-auto">
                       <div className="text-right">
                         <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">DPR No.</p>
@@ -281,31 +387,69 @@ export const DprForm = ({ isDpr, setIsDpr }) => {
                     </div>
 
                     <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 lg:space-y-10">
-
-                      {/* Section 1: Available Jobs */}
+                      {/* Section 1: Employee & Work Details */}
                       <section>
                         <div className="flex items-center gap-3 mb-4 sm:mb-6">
                           <div className="bg-orange-50 p-2 rounded-lg">
-                            <BriefcaseIcon className="w-5 h-5 text-orange-600" />
+                            <User className="w-5 h-5 text-orange-600" />
                           </div>
                           <div>
-                            <h2 className="text-lg sm:text-xl font-semibold text-slate-800">Available Jobs</h2>
-                            <p className="text-xs sm:text-sm text-slate-500">Select or add a job position</p>
+                            <h2 className="text-lg sm:text-xl font-semibold text-slate-800">Employee & Work Details</h2>
+                            <p className="text-xs sm:text-sm text-slate-500">Basic information about the work</p>
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-4 sm:gap-6">
-                          {/* Job Selection */}
-                          <div className="w-full">
-                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">
-                              Select Job
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+                          <div className="space-y-1.5 sm:space-y-2">
+                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                              <User size={14} /> Name of Employee
                             </label>
-                            <Select options={jobtype} styles={customSelectStyles()} />
-                            {/* <select className="w-full px-4 py-2.5 sm:py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-orange-400 focus:ring-4 focus:ring-orange-100 outline-none transition-all text-sm">
-                            {jobtype.map(job => (
-                              <option key={job.value} value={job.value}>{job.label}</option>
-                            ))}
-                          </select> */}
+                            <input
+                              type="text"
+                              className="w-full px-4 py-2.5 sm:py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-orange-400 focus:ring-4 focus:ring-orange-100 outline-none transition-all text-sm"
+                              placeholder="John Doe"
+                              value={dprInfo.employeeName}
+                              onChange={(e) => setDprInfo({ ...dprInfo, employeeName: e.target.value })}
+                            />
+                          </div>
+
+                          <div className="space-y-1.5 sm:space-y-2">
+                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                              <Hash size={14} /> Contract Ref.
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full px-4 py-2.5 sm:py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-orange-400 focus:ring-4 focus:ring-orange-100 outline-none transition-all text-sm"
+                              placeholder="CTR-2024-001"
+                              value={dprInfo.contractRef}
+                              onChange={(e) => setDprInfo({ ...dprInfo, contractRef: e.target.value })}
+                            />
+                          </div>
+
+                          <div className="space-y-1.5 sm:space-y-2">
+                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                              <Layers size={14} /> Standard / Scope of Services
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full px-4 py-2.5 sm:py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-orange-400 focus:ring-4 focus:ring-orange-100 outline-none transition-all text-sm"
+                              placeholder="Scope of services"
+                              value={dprInfo.scopeOfServices}
+                              onChange={(e) => setDprInfo({ ...dprInfo, scopeOfServices: e.target.value })}
+                            />
+                          </div>
+
+                          <div className="space-y-1.5 sm:space-y-2">
+                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                              <FileCheck size={14} /> Job Card Ref.
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full px-4 py-2.5 sm:py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-orange-400 focus:ring-4 focus:ring-orange-100 outline-none transition-all text-sm"
+                              placeholder="JC-2024-089"
+                              value={dprInfo.jobCardRef}
+                              onChange={(e) => setDprInfo({ ...dprInfo, jobCardRef: e.target.value })}
+                            />
                           </div>
                         </div>
                       </section>
@@ -354,82 +498,7 @@ export const DprForm = ({ isDpr, setIsDpr }) => {
                         )}
                       </section>
 
-                      {/* Section 3: Professional Details */}
-                      <section className={!isInputEnabled ? 'opacity-30 pointer-events-none' : 'transition-all duration-500'}>
-                        <div className="flex items-center gap-3 mb-4 sm:mb-6">
-                          <div className="bg-orange-50 p-2 rounded-lg">
-                            <User className="w-5 h-5 text-orange-600" />
-                          </div>
-                          <div>
-                            <h2 className="text-lg sm:text-xl font-semibold text-slate-800">Professional Information</h2>
-                            <p className="text-xs sm:text-sm text-slate-500">Enter the key details for this report</p>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
-                          <div className="space-y-1.5 sm:space-y-2">
-                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                              <User size={14} /> Employee Name
-                            </label>
-                            <input
-                              type="text"
-                              className="w-full px-4 py-2.5 sm:py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-orange-400 focus:ring-4 focus:ring-orange-100 outline-none transition-all text-sm"
-                              placeholder="John Doe"
-                              value={dprInfo.employeeName}
-                              onChange={(e) => setDprInfo({ ...dprInfo, employeeName: e.target.value })}
-                            />
-                          </div>
-
-                          <div className="space-y-1.5 sm:space-y-2">
-                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                              <Building2 size={14} /> Client Name
-                            </label>
-                            <input
-                              type="text"
-                              className="w-full px-4 py-2.5 sm:py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-orange-400 focus:ring-4 focus:ring-orange-100 outline-none transition-all text-sm"
-                              placeholder="Client Corp."
-                              value={dprInfo.clientName}
-                              onChange={(e) => setDprInfo({ ...dprInfo, clientName: e.target.value })}
-                            />
-                          </div>
-
-                          <div className="space-y-1.5 sm:space-y-2">
-                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                              <Hash size={14} /> Contract Reference
-                            </label>
-                            <input
-                              type="text"
-                              className="w-full px-4 py-2.5 sm:py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-orange-400 focus:ring-4 focus:ring-orange-100 outline-none transition-all text-sm"
-                              placeholder="CTR-2024-001"
-                              value={dprInfo.contractRef}
-                              onChange={(e) => setDprInfo({ ...dprInfo, contractRef: e.target.value })}
-                            />
-                          </div>
-
-                          <div className="space-y-1.5 sm:space-y-2">
-                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                              <FileCheck size={14} /> Job Card Reference
-                            </label>
-                            <input
-                              type="text"
-                              className="w-full px-4 py-2.5 sm:py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-orange-400 focus:ring-4 focus:ring-orange-100 outline-none transition-all text-sm"
-                              placeholder="JC-2024-089"
-                              value={dprInfo.jobCardRef}
-                              onChange={(e) => setDprInfo({ ...dprInfo, jobCardRef: e.target.value })}
-                            />
-                          </div>
-
-                          <div className="space-y-1.5 sm:space-y-2">
-                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                              <Tag size={14} /> Job Type
-                            </label>
-
-                            <Select options={jobtype} styles={customSelectStyles()} />
-                          </div>
-                        </div>
-                      </section>
-
-                      {/* Section 4: Activities Table */}
+                      {/* Section 3: Daily Work Activity Table */}
                       <section className={!isInputEnabled ? 'opacity-30 pointer-events-none' : 'transition-all duration-500'}>
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
                           <div className="flex items-center gap-3">
@@ -437,93 +506,163 @@ export const DprForm = ({ isDpr, setIsDpr }) => {
                               <FileText className="w-5 h-5 text-orange-600" />
                             </div>
                             <div>
-                              <h2 className="text-lg sm:text-xl font-semibold text-slate-800">Activity Log</h2>
-                              <p className="text-xs sm:text-sm text-slate-500">Track your daily tasks and deadlines</p>
+                              <h2 className="text-lg sm:text-xl font-semibold text-slate-800">Daily Work Activity Log</h2>
+                              <p className="text-xs sm:text-sm text-slate-500">Track your daily tasks and time</p>
                             </div>
                           </div>
                           <button
                             onClick={addActivity}
                             className="flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 active:scale-95 transition-all text-sm font-semibold"
                           >
-                            <Plus className="w-4 h-4" /> Add Activity
+                            <Plus className="w-4 h-4" /> Add Activity Row
                           </button>
                         </div>
 
                         {/* Table - Horizontal scroll on mobile */}
-                        <div className="bg-white rounded-xl border-2 border-slate-200 overflow-hidden">
+                        <div className="bg-white overflow-hidden rounded-xl border border-slate-200">
                           <div className="overflow-x-auto">
-                            <table className="w-full min-w-[800px] lg:min-w-0 text-left">
+                            <table className="w-full border-collapse bg-white text-sm">
                               <thead>
-                                <tr className="bg-slate-50 border-b-2 border-slate-200">
-                                  <th className="p-3 sm:p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Description</th>
-                                  <th className="p-3 sm:p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Action Party</th>
-                                  <th className="p-3 sm:p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Target Date</th>
-                                  <th className="p-3 sm:p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Completion</th>
-                                  <th className="p-3 sm:p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Delayed</th>
-                                  <th className="p-3 sm:p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center">Total Days</th>
-                                  <th className="p-3 sm:p-4 w-10 sm:w-12"></th>
+                                <tr className="bg-slate-50">
+                                  <th className="border border-slate-300 p-2 text-left">S.N</th>
+                                  <th className="border border-slate-300 p-2 text-left">From (Date)</th>
+                                  <th className="border border-slate-300 p-2 text-left">To</th>
+                                  <th className="border border-slate-300 p-2 text-left">Description</th>
+                                  <th className="border border-slate-300 p-2 text-left">Client/Location</th>
+                                  <th className="border border-slate-300 p-2 text-left">Entry Time</th>
+                                  <th className="border border-slate-300 p-2 text-left">Exit Time</th>
+                                  <th className="border border-slate-300 p-2 text-left">Travel (Min)</th>
+                                  <th className="border border-slate-300 p-2 text-left">Evidence</th>
+                                  <th className="border border-slate-300 p-2 text-center">Signed</th>
+                                  <th className="border border-slate-300 p-2 text-center">Actions</th>
                                 </tr>
                               </thead>
-                              <tbody className="divide-y divide-slate-100">
-                                {activities.map((activity) => (
-                                  <tr key={activity.id} className="hover:bg-orange-50/30 transition-colors">
-                                    <td className="p-2 sm:p-3">
-                                      <textarea
-                                        className="w-full p-2 sm:p-3 text-xs sm:text-sm border border-transparent hover:border-slate-200 focus:border-orange-400 bg-slate-50 rounded-lg sm:rounded-xl outline-none resize-none transition-all"
-                                        placeholder="Describe activity..."
-                                        rows="2"
-                                        value={activity.description}
-                                        onChange={(e) => updateActivity(activity.id, 'description', e.target.value)}
+                              <tbody>
+                                {activities.map((activity, index) => (
+                                  <tr key={activity.id} className="hover:bg-slate-50">
+                                    <td className="border border-slate-300 p-2 text-center font-medium">{index + 1}</td>
+                                    <td className="border border-slate-300 p-2">
+                                      <input
+                                        type="date"
+                                        // value={activity.timeFrom}
+                                        // onChange={(e) => updateActivity(activity.id, 'timeFrom', e.target.value)}
+                                        className="w-full px-2 py-1.5 border border-slate-200 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none text-sm"
                                       />
                                     </td>
-                                    <td className="p-2 sm:p-3">
+                                    <td className="border border-slate-300 p-2">
+                                      <input
+                                        type="date"
+                                        // value={activity.timeTo}
+                                        // onChange={(e) => updateActivity(activity.id, 'timeTo', e.target.value)}
+                                        placeholder="Site/Location"
+                                        className="w-full px-2 py-1.5 border border-slate-200 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none text-sm"
+                                      />
+                                    </td>
+                                    <td className="border border-slate-300 p-2">
+                                      <textarea
+                                        // value={activity.description}
+                                        // onChange={(e) => updateActivity(activity.id, 'description', e.target.value)}
+                                        placeholder="Describe the job..."
+                                        rows="2"
+                                        className="w-full px-2 py-1.5 border border-slate-200 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none text-sm resize-none"
+                                      />
+                                    </td>
+                                    <td className="border border-slate-300 p-2">
                                       <input
                                         type="text"
-                                        className="w-full p-2 sm:p-3 text-xs sm:text-sm border border-transparent hover:border-slate-200 focus:border-orange-400 bg-slate-50 rounded-lg sm:rounded-xl outline-none transition-all"
-                                        placeholder="Responsible"
-                                        value={activity.actionParty}
-                                        onChange={(e) => updateActivity(activity.id, 'actionParty', e.target.value)}
+                                        // value={activity.clientLocation}
+                                        // onChange={(e) => updateActivity(activity.id, 'clientLocation', e.target.value)}
+                                        placeholder="Client Location"
+                                        className="w-full px-2 py-1.5 border border-slate-200 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none text-sm"
                                       />
                                     </td>
-                                    <td className="p-2 sm:p-3">
+                                    <td className="border border-slate-300 p-2">
                                       <input
-                                        type="date"
-                                        className="w-full p-2 sm:p-3 text-xs sm:text-sm border border-transparent hover:border-slate-200 focus:border-orange-400 bg-slate-50 rounded-lg sm:rounded-xl outline-none transition-all"
-                                        value={activity.targetDate}
-                                        onChange={(e) => updateActivity(activity.id, 'targetDate', e.target.value)}
+                                        type="time"
+                                        // value={activity.entryTime}
+                                        // onChange={(e) => updateActivity(activity.id, 'entryTime', e.target.value)}
+                                        className="w-full px-2 py-1.5 border border-slate-200 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none text-sm"
                                       />
                                     </td>
-                                    <td className="p-2 sm:p-3">
+                                    <td className="border border-slate-300 p-2">
                                       <input
-                                        type="date"
-                                        className="w-full p-2 sm:p-3 text-xs sm:text-sm border border-transparent hover:border-slate-200 focus:border-orange-400 bg-slate-50 rounded-lg sm:rounded-xl outline-none transition-all"
-                                        value={activity.completionDate}
-                                        onChange={(e) => updateActivity(activity.id, 'completionDate', e.target.value)}
+                                        type="time"
+                                        // value={activity.exitTime}
+                                        // onChange={(e) => updateActivity(activity.id, 'exitTime', e.target.value)}
+                                        className="w-full px-2 py-1.5 border border-slate-200 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none text-sm"
                                       />
                                     </td>
-                                    <td className="p-2 sm:p-3">
-                                      <input
-                                        type="date"
-                                        className="w-full p-2 sm:p-3 text-xs sm:text-sm border border-transparent hover:border-slate-200 focus:border-orange-400 bg-slate-50 rounded-lg sm:rounded-xl outline-none transition-all"
-                                        value={activity.delayedDate}
-                                        onChange={(e) => updateActivity(activity.id, 'delayedDate', e.target.value)}
-                                      />
+                                    <td className="border border-slate-300 p-2 text-center font-medium text-slate-600">
+                                      {/* {activity.totalTravelTime > 0 ? `${activity.totalTravelTime}` : '-'} */}-
                                     </td>
-                                    <td className="p-2 sm:p-3">
-                                      <div className={`flex flex-col items-center justify-center px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl font-semibold ${activity.totalDelay > 0
-                                        ? 'bg-orange-100 text-orange-700'
-                                        : 'bg-emerald-100 text-emerald-700'
-                                        }`}>
-                                        <span className="text-sm sm:text-base">{activity.totalDelay}</span>
-                                        <span className="text-[8px] sm:text-[10px] uppercase tracking-tight">days</span>
+                                    <td className="border border-slate-300 p-2">
+                                      <div className="flex flex-col gap-1.5 text-xs">
+                                        <div className="flex items-center gap-1">
+                                          <span className="w-8">JC</span>
+                                          <label className="inline-flex items-center justify-center relative">
+                                            <input
+                                              type="checkbox"
+                                              // checked={activity.evidence.jc}
+                                              // onChange={() => updateEvidence(activity.id, 'jc')}
+                                              className="peer appearance-none w-4 h-4 rounded border-2 transition-all cursor-pointer bg-white border-amber-400 hover:border-amber-500 checked:bg-amber-500 checked:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-300"
+                                            />
+                                            <Check size={12} className="absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none" />
+                                          </label>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                          <span className="w-8">MoM</span>
+                                          <label className="inline-flex items-center justify-center relative">
+                                            <input
+                                              type="checkbox"
+                                              checked={activity.evidence.mom}
+                                              onChange={() => updateEvidence(activity.id, 'mom')}
+                                              className="peer appearance-none w-4 h-4 rounded border-2 transition-all cursor-pointer bg-white border-amber-400 hover:border-amber-500 checked:bg-amber-500 checked:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-300"
+                                            />
+                                            <Check size={12} className="absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none" />
+                                          </label>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                          <span className="w-8">Obs.</span>
+                                          <label className="inline-flex items-center justify-center relative">
+                                            <input
+                                              type="checkbox"
+                                              checked={activity.evidence.obs}
+                                              onChange={() => updateEvidence(activity.id, 'obs')}
+                                              className="peer appearance-none w-4 h-4 rounded border-2 transition-all cursor-pointer bg-white border-amber-400 hover:border-amber-500 checked:bg-amber-500 checked:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-300"
+                                            />
+                                            <Check size={12} className="absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none" />
+                                          </label>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                          <span className="w-8">A&F</span>
+                                          <label className="inline-flex items-center justify-center relative">
+                                            <input
+                                              type="checkbox"
+                                              checked={activity.evidence.af}
+                                              onChange={() => updateEvidence(activity.id, 'af')}
+                                              className="peer appearance-none w-4 h-4 rounded border-2 transition-all cursor-pointer bg-white border-amber-400 hover:border-amber-500 checked:bg-amber-500 checked:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-300"
+                                            />
+                                            <Check size={12} className="absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none" />
+                                          </label>
+                                        </div>
                                       </div>
                                     </td>
-                                    <td className="p-2 sm:p-3">
+                                    <td className="border border-slate-300 p-2 text-center">
+                                      <label className="inline-flex items-center justify-center relative">
+                                        <input
+                                          type="checkbox"
+                                          className="peer appearance-none w-4 h-4 rounded border-2 transition-all cursor-pointer bg-white border-amber-400 hover:border-amber-500 checked:bg-amber-500 checked:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-300"
+                                        />
+                                        <Check size={12} className="absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none" />
+                                      </label>
+                                    </td>
+                                    <td className="border border-slate-300 p-2 text-center">
                                       <button
                                         onClick={() => removeActivity(activity.id)}
-                                        className="p-1.5 sm:p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                                        disabled={activities.length === 1}
+                                        className="p-1.5 text-slate-400 hover:text-red-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                       >
-                                        <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                                        <Trash2 size={16} />
                                       </button>
                                     </td>
                                   </tr>
@@ -532,14 +671,158 @@ export const DprForm = ({ isDpr, setIsDpr }) => {
                             </table>
                           </div>
                         </div>
+
+                        {/* Evidence Verification Section */}
+
+                      </section>
+
+                      {/* Section 4: Signature Section */}
+                      <section className={!isInputEnabled ? 'opacity-30 pointer-events-none' : 'transition-all duration-500'}>
+                        <div className="flex items-center gap-3 mb-4 sm:mb-6">
+                          <div className="bg-orange-50 p-2 rounded-lg">
+                            <Signature className="w-5 h-5 text-orange-600" />
+                          </div>
+                          <div>
+                            <h2 className="text-lg sm:text-xl font-semibold text-slate-800">Sign-off & Authorization</h2>
+                            <p className="text-xs sm:text-sm text-slate-500">Final approval and verification</p>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          {/* Left Column - Signatures */}
+                          <div className="space-y-4">
+
+
+                            <div className="space-y-1.5">
+                              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                                <UserCheck size={14} /> Role
+                              </label>
+                              <Select
+                                options={roleOptions}
+                                styles={customSelectStyles()}
+                                value={roleOptions.find(opt => opt.value === signatureInfo.role)}
+                                onChange={(opt) => setSignatureInfo({ ...signatureInfo, role: opt.value })}
+                              />
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                                <User size={14} /> Prepared by
+                              </label>
+                              <Select
+                                options={preparedByOptions}
+                                styles={customSelectStyles()}
+                                value={preparedByOptions.find(opt => opt.value === signatureInfo.preparedBy) || null}
+                                onChange={(opt) => setSignatureInfo({ ...signatureInfo, preparedBy: opt?.value || '' })}
+                                placeholder="HR / Admin"
+                              />
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                                <Eye size={14} /> Reviewed by
+                              </label>
+                              <Select
+                                options={reviewedByOptions}
+                                styles={customSelectStyles()}
+                                value={reviewedByOptions.find(opt => opt.value === signatureInfo.reviewedBy) || null}
+                                onChange={(opt) => setSignatureInfo({ ...signatureInfo, reviewedBy: opt?.value || '' })}
+                                placeholder="Operation Manager / HoD"
+                              />
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                                <Award size={14} /> Approved by
+                              </label>
+                              <Select
+                                options={approvedByOptions}
+                                styles={customSelectStyles()}
+                                value={approvedByOptions.find(opt => opt.value === signatureInfo.approvedBy) || null}
+                                onChange={(opt) => setSignatureInfo({ ...signatureInfo, approvedBy: opt?.value || '' })}
+                                placeholder="MD / Province Head"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Right Column - Notes & Acceptance */}
+                          <div className="space-y-4">
+                            {/* Closing Note/Remark */}
+                            <div className="space-y-1.5">
+                              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                                <FileText size={14} /> Closing Note / Remark
+                              </label>
+                              <textarea
+                                className="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-orange-400 focus:ring-4 focus:ring-orange-100 outline-none transition-all text-sm"
+                                placeholder="Enter closing remarks or notes..."
+                                rows="4"
+                                value={signatureInfo.closingNote}
+                                onChange={(e) => setSignatureInfo({ ...signatureInfo, closingNote: e.target.value })}
+                              />
+                            </div>
+
+                            {/* Consultant's Acceptance with Auto-list */}
+                            <div className="space-y-1.5">
+                              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                                <CheckSquare size={14} /> Consultant's Acceptance
+                              </label>
+                              <p className="text-xs text-slate-400 mb-1">Type and press Enter to add items</p>
+                              <div className="relative">
+                                <input
+                                  type="text"
+                                  className="w-full px-4 py-2.5 bg-white border-2 border-slate-200 rounded-xl focus:border-orange-400 focus:ring-4 focus:ring-orange-100 outline-none transition-all text-sm pr-10"
+                                  placeholder="Add acceptance point..."
+                                  value={signatureInfo.consultantAcceptance}
+                                  onChange={(e) => setSignatureInfo({ ...signatureInfo, consultantAcceptance: e.target.value })}
+                                  onKeyDown={handleConsultantAcceptanceKeyDown}
+                                />
+                                <button
+                                  onClick={() => {
+                                    if (signatureInfo.consultantAcceptance.trim()) {
+                                      setSignatureInfo(prev => ({
+                                        ...prev,
+                                        consultantAcceptanceList: [...prev.consultantAcceptanceList, prev.consultantAcceptance.trim()],
+                                        consultantAcceptance: ''
+                                      }));
+                                    }
+                                  }}
+                                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                                >
+                                  <Plus className="w-4 h-4" />
+                                </button>
+                              </div>
+
+                              {/* Acceptance List */}
+                              {signatureInfo.consultantAcceptanceList.length > 0 && (
+                                <div className="mt-3 bg-slate-50 rounded-xl p-3 border border-slate-200">
+                                  <p className="text-xs font-semibold text-slate-500 mb-2">Acceptance Points:</p>
+                                  <ul className="space-y-2">
+                                    {signatureInfo.consultantAcceptanceList.map((item, index) => (
+                                      <li key={index} className="flex items-start gap-2 group">
+                                        <span className="text-orange-500 mt-0.5">•</span>
+                                        <span className="text-sm text-slate-700 flex-1">{item}</span>
+                                        <button
+                                          onClick={() => removeConsultantAcceptanceItem(index)}
+                                          className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-orange-600 rounded transition-all"
+                                        >
+                                          <X className="w-3 h-3" />
+                                        </button>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
                       </section>
 
                       {/* Submit Section */}
                       <div className="flex flex-col sm:flex-row items-center justify-end gap-3 sm:gap-4 pt-4 sm:pt-6 border-t-2 border-slate-100">
                         <button
                           // onClick={handleSubmit}
-                          // disabled={!isInputEnabled}
-                          className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl text-white font-semibold tracking-wide transition-all ${false
+                          disabled={!isInputEnabled}
+                          className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl text-white font-semibold tracking-wide transition-all ${isInputEnabled
                             ? 'bg-orange-500 hover:bg-orange-600 hover:shadow-lg active:scale-95'
                             : 'bg-slate-300 cursor-not-allowed'
                             }`}
@@ -562,19 +845,8 @@ export const DprForm = ({ isDpr, setIsDpr }) => {
         </div>
       </motion.div>
     </AnimatePresence>
-
-
   );
 };
-
-
-
-
-
-
-
-
-
 
 const OthersModal = ({ isOpen, onClose, onAdd }) => {
   const [inputValue, setInputValue] = useState('');

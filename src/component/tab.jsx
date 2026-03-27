@@ -14,7 +14,7 @@ export const Tab_C = ({ content, tab }) => {
       <Tabs
         selectedIndex={activeTab}
         onSelect={(index) => setActiveTab(index)}
-        className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+        className="bg-white rounded-2xl  border border-gray-100 overflow-hidden"
       >
         <div className="relative  border-b border-gray-100">
           <TabList className="flex overflow-x-auto no-scrollbar outline-none">

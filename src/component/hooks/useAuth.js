@@ -7,10 +7,16 @@ export const useAuth = () => {
 
   const queryClient = useQueryClient();
 
-  const userQuery = useQuery({
+  const isHomePage = location.pathname === '/'
+  // console.log(isHomePage)
+  const useMe = useQuery({
     queryKey: ["me"],
     queryFn: getMe,
     retry: false,
+    staleTime: 0,
+    enabled: !isHomePage,
+    refetchOnReconnect: true, // automatically refetch after network loss
+    refetchOnWindowFocus: true,
   });
 
 
@@ -31,10 +37,10 @@ export const useAuth = () => {
     },
   });
 
-  
+
   return {
-    userQuery,
-    isAuthLoading: userQuery.isLoading,
+    useMe,
+    isAuthLoading: useMe.isLoading,
     login,
     logout,
   };

@@ -33,7 +33,10 @@ import {
     ShieldCheck,
     IdCard,
     Building2,
-    Globe
+    Globe,
+    UserCheck,
+    UserX,
+    UserPlus
 } from "lucide-react";
 import RecruitmentForm from "./emp-mgt_client";
 
@@ -507,6 +510,27 @@ export const RecruitmentTable = () => {
 }, []);
     // document.body.style.overflow='hidden'
 
+    // StatCard Component Definition
+    const StatCard = ({ label, value, icon: Icon, colorClass, bgColorClass }) => (
+      <div className={`relative overflow-hidden bg-white border border-slate-200 rounded-2xl p-5 transition-all duration-500 group flex items-center justify-between gap-4 cursor-default shadow-none hover:shadow-none hover:border-slate-300`}>
+        
+        {/* Left Side: Icon with stylized container */}
+        <div className={`flex-shrink-0 w-14 h-14 flex items-center justify-center rounded-2xl ${bgColorClass} ${colorClass} transition-all duration-500 group-hover:rotate-6 group-hover:scale-110`}>
+          <Icon size={26} strokeWidth={2} />
+        </div>
+        
+        {/* Right Side: Data and Label */}
+        <div className="flex flex-col items-end text-right space-y-0.5">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em]">{label}</span>
+          <div className="flex items-baseline gap-1">
+            <h3 className="text-3xl font-extrabold text-slate-900 tabular-nums tracking-tight">{value}</h3>
+            {/* Subtle status indicator */}
+            <div className={`w-1.5 h-1.5 rounded-full ${colorClass.split(' ')[0].replace('text', 'bg')} opacity-60`} />
+          </div>
+        </div>
+      </div>
+    );
+
     return (
         <div className="p-1 min-h-screen bg-white relative ">
             <div className="max-w-7xl mx-auto">
@@ -558,97 +582,47 @@ export const RecruitmentTable = () => {
                     </div>
 
                     {/* STATS CARDS */}
-                    <div className="grid grid-cols-1  md:grid-cols-4  gap-5 mb-8">
-                        <div className="bg-white border border-amber-300 rounded-2xl p-6 shadow   
-             hover:scale-105 transition-all duration-300">
-                            <div className="flex items-start justify-between">
-                                <div>
-                                    <p
-                                        className="text-sm text-slate-600 mb-2"
-                                        style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
-                                    >
-                                        Total Employees
-                                    </p>
-                                    <p
-                                        className="text-3xl font-bold text-slate-900"
-                                        style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 600 }}
-                                    >
-                                        {recruitmentData.length}
-                                    </p>
-                                </div>
-                                <div className="p-3 bg-gradient-to-br from-blue-100 
-                                to-blue-200 rounded-xl shadow-lg shadow-blue-200/30">
-                                    <Users className="text-blue-700" size={22} />
-                                </div>
-                            </div>
-                        </div>
+                   {/* import { Users, UserCheck, UserX, UserPlus } from "lucide-react"; */}
 
-                        <div className="bg-white border border-amber-300 rounded-2xl p-6   hover:scale-105 transition-all duration-300">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p
-                                        className="text-sm text-slate-600 mb-2"
-                                        style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
-                                    >
-                                        Active Employees
-                                    </p>
-                                    <p
-                                        className="text-3xl font-bold text-emerald-700"
-                                        style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 600 }}
-                                    >
-                                        {recruitmentData.filter(e => e.employeeStatus === "Active").length}
-                                    </p>
-                                </div>
-                                <div className="p-3 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-xl shadow-lg shadow-emerald-200/30">
-                                    <CheckCircle className="text-emerald-700" size={22} />
-                                </div>
-                            </div>
-                        </div>
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+  
+  {/* Total Employees */}
+  <StatCard
+    label="Total Employee"
+    value={recruitmentData.length}
+    icon={Users}
+    colorClass="text-slate-900"
+    bgColorClass="bg-slate-100"
+  />
 
-                        <div className="bg-white border border-amber-300 rounded-2xl p-6   hover:scale-105 transition-all duration-300">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p
-                                        className="text-sm text-slate-600 mb-2"
-                                        style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
-                                    >
-                                        Permanent Staff
-                                    </p>
-                                    <p
-                                        className="text-3xl font-bold text-blue-700"
-                                        style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 600 }}
-                                    >
-                                        {recruitmentData.filter(e => e.employmentType === "Permanent").length}
-                                    </p>
-                                </div>
-                                <div className="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl shadow-lg shadow-blue-200/30">
-                                    <Briefcase className="text-blue-700" size={22} />
-                                </div>
-                            </div>
-                        </div>
+  {/* Active Employees */}
+  <StatCard
+    label="Active"
+    value={recruitmentData.filter(e => e.employeeStatus === "Active").length}
+    icon={UserCheck}
+    colorClass="text-emerald-600"
+    bgColorClass="bg-emerald-100"
+  />
 
-                        <div className="bg-white  rounded-2xl p-6  border border-amber-300  hover:scale-105 transition-all duration-300">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p
-                                        className="text-sm text-slate-600 mb-2"
-                                        style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
-                                    >
-                                        New This Month
-                                    </p>
-                                    <p
-                                        className="text-3xl font-bold text-amber-700"
-                                        style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 600 }}
-                                    >
-                                        2
-                                    </p>
-                                </div>
-                                <div className="p-3 bg-gradient-to-br from-amber-100 to-amber-200 rounded-xl shadow-lg shadow-amber-200/30">
-                                    <Users className="text-amber-700" size={22} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+  {/* Inactive Employees */}
+  <StatCard
+    label="InActive"
+    value={recruitmentData.filter(e => e.employeeStatus !== "Active").length}
+    icon={UserX}
+    colorClass="text-red-600"
+    bgColorClass="bg-red-100"
+  />
+
+  {/* New Joiners */}
+  <StatCard
+    label="New Joiners"
+    value={67}
+    icon={UserPlus}
+    colorClass="text-blue-600"
+    bgColorClass="bg-blue-100"
+  />
+
+</div>
                 </div>
 
                 {/* FILTERS AND SEARCH */}
@@ -667,12 +641,12 @@ export const RecruitmentTable = () => {
                                     placeholder="Search by ID, name, email, department, or designation..."
                                     className="
                     w-full pl-14 pr-5 py-3.5
-                    bg-gradient-to-r from-white to-amber-50/30 border-2 border-amber-300
-                    rounded-2xl
+                    bg-white border border-slate-300 focus:border-amber-500
+                    rounded-md
                     text-slate-900 placeholder-slate-500
-                    focus:ring-4 focus:ring-amber-400/20 focus:border-amber-500 focus:bg-white
-                    outline-none transition-all duration-300 shadow-lg shadow-amber-200/20
-                    hover:shadow-xl hover:shadow-amber-200/30
+                    focus:ring-4 focus:ring-amber-400/20  focus:bg-white
+                    outline-none transition-all duration-300 
+                   
                   "
                                     style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 400 }}
                                 />
@@ -720,7 +694,7 @@ export const RecruitmentTable = () => {
 
                 {/* TABLE CONTAINER */}
                 {/* custom tailwind table */}
-                <div className="bg-white to-slate-50 border border-slate-300 rounded-2xl overflow-hidden ">
+                <div className="bg-white to-slate-50 border border-slate-300 rounded-xl overflow-hidden ">
                     {paginatedData.length === 0 ? (
                         <div className="py-16 text-center">
                             <div
@@ -738,26 +712,26 @@ export const RecruitmentTable = () => {
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
+                            <table className="min-w-full divide-y divide-slate-200">
+                                <thead className="bg-slate-100">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-2 text-left text-xs font-medium text-slate-900 uppercase tracking-wider">
                                             <CustomCheckbox
                                                 checked={selectedRows.length === paginatedData.length}
                                                 onChange={handleSelectAll}
                                                 id="select-all"
                                             />
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Designation</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employment Type</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Join Date</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        <th className="px-6 py-2 text-left text-xs font-medium text-slate-900 uppercase tracking-wider">Employee</th>
+                                        <th className="px-6 py-2 text-left text-xs font-medium text-slate-900 uppercase tracking-wider">Email</th>
+                                        <th className="px-6 py-2 text-left text-xs font-medium text-slate-900 uppercase tracking-wider">Contact</th>
+                                        <th className="px-6 py-2 text-left text-xs font-medium text-slate-900 uppercase tracking-wider">Department</th>
+                                        <th className="px-6 py-2 text-left text-xs font-medium text-slate-900 uppercase tracking-wider">Designation</th>
+                                        <th className="px-6 py-2 text-left text-xs font-medium text-slate-900 uppercase tracking-wider">Employment Type</th>
+                                        <th className="px-6 py-2 text-left text-xs font-medium text-slate-900 uppercase tracking-wider">Status</th>
+                                        <th className="px-6 py-2 text-left text-xs font-medium text-slate-900 uppercase tracking-wider">Join Date</th>
+                                        <th className="px-6 py-2 text-left text-xs font-medium text-slate-900 uppercase tracking-wider">End Date</th>
+                                        <th className="px-6 py-2 text-left text-xs font-medium text-slate-900 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
@@ -910,7 +884,7 @@ export const RecruitmentTable = () => {
             <div className="absolute top-1 left-1  w-full">
                 {open && (
                     <div className="w-full  relative inset-0  top-0
-                     lg:h-[69rem]                      md:h-[69rem]  sm:h-[89rem]   ">
+                        ">
                         <RecruitmentForm onClose={handleClose} />
                     </div>
                 )

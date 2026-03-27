@@ -1,226 +1,215 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
-    Users,
-    Sparkles,
-    Plus,
-    FileText,
-    Handshake,
-    CreditCard,
-    ClipboardCheck,
-    FileSignature,
-    UserCheck,
-    MapPinned,
-    Route,
-    ClipboardEdit,
-    Settings,
-    Eye,
-    ListChecks,
-    CheckCircle2,
-
-    PlusCircle,
-
-
+    Users, Sparkles, FileText, Handshake, CreditCard,
+    ClipboardCheck, FileSignature, UserCheck, Route,
+    ClipboardEdit, Settings, Eye, ListChecks, CheckCircle2,
+    PlusCircle
 } from "lucide-react";
 import LeadForm from "./leadForm";
 import HelperSalesPipeline from "./helper";
-import { SmallModal } from "./innerHelper/lead";
-
-/* -------------------- ISO STAGES -------------------- */
+import { SmallModal } from "./innerHelper/Stage1/overview";
+import { useSalesData } from "../../hooks/useSales";
+import { ComponentLoader } from "../../loader";
 
 export const STAGES = [
-    { title: "Lead ", name: "Lead", icon: Users, step: 1 },
-    { title: " Proposal", name: "Proposal", icon: FileText, step: 2 },
-    { title: "Meeting", name: "Meeting", icon: Handshake, step: 3 },
-    { title: "50% Retention", name: "50% Retention", icon: CreditCard, step: 4 },
-    { title: "CIS & PCCCF", name: "CIS & PCCCF", icon: ClipboardCheck, step: 5 },
-    { title: " Contract", name: "Contract", icon: FileSignature, step: 6 },
-    { title: "Consultant", name: "Consultant", icon: UserCheck, step: 7 },
-    { title: "Deployment", name: "Deployment", icon: MapPinned, step: 8 },
-    { title: "Road Map", name: "Road Map", icon: Route, step: 9 },
-    { title: "Job Card", name: "Job Card", icon: ClipboardEdit, step: 10 },
-    { title: "Service", name: "Service", icon: Settings, step: 11 },
-    { title: "Observation", name: "Observation", icon: Eye, step: 12 },
-    { title: "Traking", name: "Traking", icon: ListChecks, step: 13 },
-    { title: "Closure", name: "Closure", icon: CheckCircle2, step: 14 },
+    { title: "Lead Generation", name: "Lead", icon: Users, step: 1 },
+    { title: "Proposal/Meeting", name: "Proposal/Meeting", icon: FileText, step: 2 },
+    { title: "50% Retention", name: "50% Retention", icon: CreditCard, step: 3 },
+    { title: "CIS & PCCCF", name: "CIS & PCCCF", icon: ClipboardCheck, step: 4 },
+    { title: "Contract", name: "Contract", icon: FileSignature, step: 5 },
+    { title: "Consultant", name: "Consultant", icon: UserCheck, step: 6 },
+    { title: "Road Map", name: "Road Map", icon: Route, step: 7 },
+    { title: "Job Card", name: "Job Card", icon: ClipboardEdit, step: 8 },
+    { title: "Service", name: "Service", icon: Settings, step: 9 },
+    { title: "Observation", name: "Observation", icon: Eye, step: 10 },
+    { title: "Tracking", name: "Traking", icon: ListChecks, step: 11 },
+    { title: "Closure", name: "Closure", icon: CheckCircle2, step: 12 },
 ];
-/* -------------------- INDIVIDUAL PIPELINE -------------------- */
-
-
-/* -------------------- MAIN COMPONENT -------------------- */
 
 export const SalesPipeline = () => {
-
     const [showLeadForm, setShowLeadForm] = useState(false);
-    const [isStage, setStage] = useState(false)
-    const [activeIndex, setActiveIndex] = useState(null);
+    const [isStage, setStage] = useState(false);
+    const [tempID, settempID] = useState("")
+    const [_id, Set_id] = useState({ stageID: '', SalesID: '' })
+    const handleClose = () => setShowLeadForm(false);
 
-    const handleClose = () => {
+    const handleClick = (id, stageId, s, salesId) => {
 
-        setShowLeadForm(false);
-        // setActiveIndex((prev) => (prev === index ? null : index));
-    }
-    const handleClick = (id) => {
-
+        Set_id({ stageID: stageId, SalesID: salesId, s: s })
+        settempID(stageId)
+        alert(`Clicked on card with id: ${id} and stageId: ${stageId}`);
         setStage(true)
-        console.log(id)
-        // alert(id)
-    }
-    // localStorage.getItem('newLead') && console.log('New Lead Data from Local Storage:', JSON.parse(localStorage.getItem('newLead')));
+
+    };
+    // console.log('Stage status', Stage_id);
+    const { data: salesData, isLoading, error } = useSalesData();
+
+    const { data } = salesData || {};
+    const organizations = data?.flatMap(item =>
+        item?.details?.flatMap(detail => detail?.organization || [])
+    ) || [];
+
+    const sales_id = data?.map((sale) => {
+        return sale._id
+    })
+    // console.log('Sales id ', sales_id)
+    const stages = {};
+
+    data?.forEach(item => {
+        item?.details?.forEach(detail => {
+            Object.entries(detail?.stages || {}).forEach(([key, value]) => {
+                if (!stages[key]) stages[key] = [];
+                stages[key].push(...value);
+            });
+        });
+    });
+
+    // console.log('flat', stages.Stage1, stages.Stage2, stages.Stage3);
+
+    const stageIds = Object.fromEntries(
+        Object.entries(stages).map(([key, value]) => [
+            key,
+            value.map(stage => stage._id)
+        ])
+    );
+ 
+    const ID_CurrentStage = Object.fromEntries(
+        Object.entries(stages).map(([key, value]) => [
+            key,
+            value.filter(stage => stage._id === tempID) // keep only with _id
+                .map(stage => ({ id: stage._id, currentStage: stage.currentStage }))
+        ])
+    );
     return (
         <div
-            className="min-h-screen bg-white p-6 md:p-16 antialiased text-slate-900"
+            className="min-h-screen bg-white p-6 md:p-12 antialiased text-slate-900"
             style={{ fontFamily: "'Roboto Slab', serif" }}
         >
-            <div className="max-w-7xl mx-auto">
-
-                <header className="flex flex-col md:flex-row justify-between items-center mb-16 gap-8">
-                    <div className="text-center md:text-left">
-                        <div className="flex items-center justify-center md:justify-start gap-3 mb-3">
-                            <div className="p-2 bg-amber-100 rounded-lg">
-                                <Sparkles className="text-orange-600" size={20} />
-                            </div>
-                            <span className="text-xs font-black text-orange-700 uppercase tracking-[0.3em]">
-                                ISO Management Portal
-                            </span>
+            <div className="max-w-[1700px] mx-auto">
+                {/* --- HEADER --- */}
+                <header className="mb-14">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-amber-100 rounded-lg">
+                            <Sparkles className="text-orange-600" size={18} />
                         </div>
-                        <h1 className="text-5xl font-black text-slate-900 tracking-wide  leading-none">
-                            Sales <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-600">Pipeline</span>
-                        </h1>
-                        <p className="text-slate-400 mt-3 text-lg font-light">Monitor certification lifecycles and revenue milestones</p>
+                        <span className="text-[11px] font-black text-orange-700 uppercase tracking-[0.3em]">
+                            ISO Management Portal
+                        </span>
                     </div>
-
-
-
-
-
+                    <h1 className="text-6xl font-black text-slate-900 tracking-tight leading-none">
+                        Sales <span className="text-orange-600">Pipeline</span>
+                    </h1>
+                    <div className="h-1 w-24 bg-gradient-to-r from-amber-400 to-orange-500 mt-4 rounded-full"></div>
                 </header>
 
-                {/* pipeline selector */}
-
-                {/* symmetrical grid for stages */}
-                <div className="flex flex-row gap-14 overflow-x-auto py-4 custom-scrollbar cursor-grab">
+                {/* --- PIPELINE SCROLL AREA --- */}
+                <div className="flex gap-8 overflow-x-auto pb-10 custom-scrollbar scroll-smooth">
                     {STAGES.map((stage) => (
-                        <div key={`stage-${stage.step}`} className="flex flex-col min-w-[320px] justify-start items-start">
-
-                            {/* header section */}
-                            <div className="flex w-full items-center gap-6 py-3 border-b border-slate-200 last:border-0">
-                                <div className="relative">
-                                    <div className="flex bg-amber-100/50 rounded-full items-center justify-center w-12 h-12 ring-4 ring-amber-50/50">
-                                        <stage.icon className="text-amber-600" size={22} />
-                                    </div>
-                                </div>
-
-                                <div className="flex-grow flex flex-row gap-6 items-center justify-between">
-                                    <h2 className="text-md font-semibold text-slate-700">
+                        <div
+                            key={`stage-${stage.step}`}
+                            className="flex flex-col min-w-[320px] w-[320px]"
+                        >
+                            {/* Stage Heading */}
+                            <div className="flex items-center justify-between mb-6 px-1">
+                                <div className="flex items-center gap-3">
+                                    <stage.icon className="text-amber-500" size={20} />
+                                    <h2 className="text-sm font-bold text-slate-700 uppercase tracking-tighter">
                                         {stage.title}
                                     </h2>
-
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 font-semibold text-amber-600">
-                                        4
-                                    </div>
                                 </div>
+                                <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded">
+                                    04
+                                </span>
                             </div>
 
-                            {/* content area that can grow */}
-                            <div className="mt-7 flex flex-col w-full items-center justify-center rounded-lg border-2 border-dashed
-                    border-slate-200 p-3 text-amber-500 transition-all hover:border-amber-200 h-auto">
+                            {/* Column Body */}
+                            <div className="flex flex-col gap-4 p-4 rounded-xl
+                              border-2 border-amber-500 border-dotted min-h-[60vh]
+                              transition-colors hover:bg-amber-50/30">
 
-                                {stage.name === "Lead" ? (
-                                    <>
-                                        <div className="flex flex-col gap-4 w-full pb-4">
-                                            {
-                                                stage.step === 1 && (<SmallModal />)
-                                            }
-                                            {/* {Array.from({ length: Number(2) || 0 }).map((_, i) => {
-                                                // const box = getBoxData(i + 1);
-                                                // console.log(i)
-                                                return <SmallModal key={i} data={i} />;
-                                            })} */}
-                                        </div>
-
-                                        <div className="flex w-full flex-row rounded-lg text-center hover:border-amber-300 
-                                hover:bg-amber-50/30 transition-all duration-200 align-middle gap-2 cursor-pointer 
-                                justify-center border-2 border-dashed border-slate-200 p-4 items-center group"
-                                            onClick={() => setShowLeadForm(true)}>
-                                            <PlusCircle size={22} className="text-amber-400 group-hover:text-amber-500 transition-colors" />
-                                            <span className="font-medium text-slate-600 group-hover:text-amber-600 transition-colors">
-                                                Add New Lead
-                                            </span>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        <div className="flex flex-col gap-4 w-full">
-                                            {
-                                                stage.step === 2 && (<>
-                                                    {
-                                                        Array.from({ length: 3 }).map((_, idx) => {
-                                                            // if(idx===0) return
-                                                            return (
-                                                                // <div>this is {idx}{_}</div>
-                                                                <SmallModal key={`${idx} lead`} data={idx} onClick={() => handleClick(idx)} />
-
-                                                            )
-                                                        })
-                                                    }
-
-                                                </>)
-                                            }
-                                            {
-                                                stage.step === 5 && (<>
-                                                    {
-                                                        Array.from({ length: 2 }).map((_, idx) => {
-                                                            // if(idx===0) return
-                                                            return (
-                                                                // <div>this is {idx}{_}</div>
-                                                                <SmallModal key={`${idx} lead`} data={idx} onClick={() => handleClick(idx)} />
-
-                                                            )
-                                                        })
-                                                    }
-
-                                                </>)
-                                            }
-                                            {
-                                                stage.step === 6 && (<>
-                                                    {
-                                                        Array.from({ length: 1 }).map((_, idx) => {
-                                                            // if(idx===0) return
-                                                            return (
-                                                                // <div>this is {idx}{_}</div>
-                                                                <SmallModal key={`${idx} lead`} data={idx} onClick={() => handleClick(idx)} />
-
-                                                            )
-                                                        })
-                                                    }
-
-                                                </>)
-                                            }
-                                           
-
-
-                                        </div>
-                                    </>
+                                {stage.name === "Lead" && (
+                                    <button
+                                        onClick={() => setShowLeadForm(true)}
+                                        className="w-full py-6 border-2 border-dashed border-amber-200 rounded-2xl flex flex-col items-center justify-center gap-2 text-amber-600 bg-white hover:border-orange-400 hover:text-orange-700 transition-all duration-300 shadow-sm hover:shadow-md"
+                                    >
+                                        <PlusCircle size={24} />
+                                        <span className="text-xs font-black uppercase tracking-widest">New Entry</span>
+                                    </button>
                                 )}
+
+                                {/* Card Containers */}
+                                <div className="space-y-4">
+                                    {/* Logic to render based on stage step */}
+                                    {/* {stage.step === 1 && <SmallModal />} */}
+
+                                    {stage.step === 1 && (
+                                        isLoading ? (
+                                            <div className="flex items-center justify-center h-[200px]">
+                                                <ComponentLoader />
+                                            </div>
+                                        ) : (
+                                            organizations?.map((org, idx) => (
+                                                <div
+                                                    key={`${stage.step}-${idx}`}
+                                                    className="bg-white rounded-2xl 
+                                                    cursor-pointer border
+        border-slate-200  
+        hover:border-orange-300 transition-all transform
+        hover:-translate-y-1"
+                                                    onClick={() => handleClick(idx, stageIds.Stage1[idx],1, sales_id[idx])}
+                                                >
+                                                    <SmallModal data={idx} org={org} />
+                                                </div>
+                                            ))
+                                        )
+                                    )}
+                                    {stage.step === 2 && (
+                                        isLoading ? (
+                                            <div className="flex items-center justify-center h-[200px]">
+                                                <ComponentLoader />
+                                            </div>
+                                        ) : (
+                                            organizations?.map((org, idx) => (
+                                                <div
+                                                    key={`${stage.step}-${idx}`}
+                                                    className="bg-white rounded-2xl 
+                                                    cursor-pointer border
+        border-slate-200  
+        hover:border-orange-300 transition-all transform
+        hover:-translate-y-1"
+
+                                                    onClick={() => handleClick(idx, stageIds.Stage2[idx], 2, sales_id[idx])}
+                                                >
+                                                    <SmallModal data={idx} org={org} />
+                                                </div>
+                                            ))
+                                        )
+                                    )}
+                                </div>
                             </div>
                         </div>
                     ))}
                 </div>
-
-
             </div>
-            {
-                showLeadForm && <LeadForm onClose={handleClose} />
-            }
-            <HelperSalesPipeline isStage={isStage} setStage={setStage} />
+
+            {showLeadForm && <LeadForm onClose={handleClose} />}
+            <HelperSalesPipeline isStage={isStage} setStage={setStage} _id={_id} ID_CurrentStage={ID_CurrentStage} />
+
+            <style jsx>{`
+                .custom-scrollbar::-webkit-scrollbar {
+                    height: 6px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: #fed7aa; /* amber-200 */
+                    border-radius: 20px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: #fb923c; /* orange-400 */
+                }
+            `}</style>
         </div>
     );
 };
-
-
-
-
-
-
-
-

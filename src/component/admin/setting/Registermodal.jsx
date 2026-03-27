@@ -1,13 +1,15 @@
 // RegisterModal.jsx
 import {
   X, User, Building, Mail, Phone, Lock, KeyRound, ChevronRight,
-  Loader2, CircleAlert
+  Loader2, CircleAlert,
+  PhoneCall,
+  UserCheck
 } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import axios from "axios";
 import Select from "react-select";
-import { useRecruitmentData } from "./hooks/useRecruitment";
+import { useRecruitmentData, useRecruitmentDataForClient } from "../../hooks/useRecruitment";
 
 // --------------------- helpers ---------------------
 const createOptions = (data, field) =>
@@ -21,6 +23,25 @@ const fullNameOptions = (data) =>
     value: item._id,
     label: `${item.firstName || ""} ${item.lastName || ""}`.trim(),
   })) || [];
+const C_fullNameOptions = (data) => {
+  // console.log('from C_fullNameOptions', data?.data);
+  return (
+    data?.data?.map((item) => ({
+      value: item._id,
+      label: `${item.organizationName
+        || ""}`.trim(),
+    })) || []
+  );
+};
+const C_createOptions = (data, field) => {
+  // console.log('from C_createOptions', data?.data);
+  return (
+    data?.data?.map((item) => ({
+      value: item._id,
+      label: item.contact[field],
+    })) || []);
+
+}
 
 // --------------------- Initial States ---------------------
 const initialStaffState = {
@@ -37,10 +58,12 @@ const initialStaffState = {
 
 const initialClientState = {
   organizationName: "",
+  username:"",
   email: "",
   phone: "",
   password: "",
   confirmPassword: "",
+  Client_id: "",
 };
 
 // --------------------- Staff Form ---------------------
@@ -102,15 +125,30 @@ const StaffForm = ({
           <label className="block text-sm font-semibold text-slate-700 flex items-center gap-1">
             Role <span className="text-red-500">*</span>
           </label>
-          <Select
+          {/* <Select
             options={roleOptions}
             value={roleOptions.find((opt) => opt.value === staffData.role)}
+            defaultInputValue="staff"
             onChange={(selected) => onSelectChange(selected, "role", "staff")}
             className="react-select-container"
             classNamePrefix="select"
+            isDisabled={true}
             placeholder="Select a role..."
             styles={customSelectStyles}
+          /> */}
+           <div className="relative">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+            <UserCheck size={20} />
+          </div>
+          <input
+            type="text"
+            name="position"
+            value='Staff'
+            readOnly
+            className="w-full py-3.5 pl-12 pr-4 rounded-xl border  border-slate-300 outline-none text-sm font-medium bg-slate-50 text-slate-600 cursor-not-allowed"
+            // placeholder="Auto Filled from Full Name selection"
           />
+        </div>
         </div>
       </div>
 
@@ -173,7 +211,7 @@ const StaffForm = ({
           />
         </div>
       </div>
-
+      
       {/* Password fields */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
@@ -190,7 +228,8 @@ const StaffForm = ({
               value={staffData.password}
               readOnly
               onChange={(e) => onInputChange(e, "staff")}
-              className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium bg-white"
+             className="w-full py-3.5 pl-12 pr-4 rounded-xl border
+               border-slate-300 outline-none text-sm font-medium bg-slate-50 text-slate-600 cursor-not-allowed"
               placeholder="Enter password"
             />
           </div>
@@ -210,7 +249,8 @@ const StaffForm = ({
               value={staffData.password}
               readOnly
               onChange={(e) => onInputChange(e, "staff")}
-              className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium bg-slate-50 text-slate-600 cursor-not-allowed"
+              className="w-full py-3.5 pl-12 pr-4 rounded-xl border
+               border-slate-300 outline-none text-sm font-medium bg-slate-50 text-slate-600 cursor-not-allowed"
               placeholder="Confirm password"
             />
           </div>
@@ -252,32 +292,40 @@ const ClientForm = ({
   onInputChange,
   onSubmit,
   loading,
+  customSelectStyles,
+  ClientFN,
+  // firstNameOptions,
+  onSelectChange
 }) => {
+  // console.log('from client ::::', clientData)
   return (
     <>
       {/* Org Name */}
       <div className="space-y-2">
-        <label className="block text-sm font-semibold text-slate-700 flex items-center gap-1">
+        <label className=" text-sm font-semibold text-slate-700 flex items-center gap-1">
           Client / Organization Name <span className="text-red-500">*</span>
         </label>
         <div className="relative">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
             <Building size={20} />
           </div>
-          <input
-            type="text"
-            name="organizationName"
-            value={clientData.organizationName}
-            onChange={(e) => onInputChange(e, "client")}
-            className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100"
-            placeholder="Acme Corporation"
+          <Select
+            options={ClientFN}
+            value={ClientFN?.find((opt) => opt.value === clientData.organizationName )}
+            onChange={(selected) => onSelectChange(selected, "fullName", "client")}
+            className="react-select-container"
+            classNamePrefix="select"
+            placeholder="Select client full name..."
+            isClearable
+            isSearchable
+            styles={customSelectStyles}
           />
         </div>
       </div>
 
       {/* Org Email */}
       <div className="space-y-2">
-        <label className="block text-sm font-semibold text-slate-700 flex items-center gap-1">
+        <label className=" text-sm font-semibold text-slate-700 flex items-center gap-1">
           Organization Email Address <span className="text-red-500">*</span>
         </label>
         <div className="relative">
@@ -288,9 +336,48 @@ const ClientForm = ({
             type="email"
             name="email"
             value={clientData.email}
+            readOnly={!!clientData.organizationName}
             onChange={(e) => onInputChange(e, "client")}
-            className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100"
+            className={`w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium ${clientData.organizationName ? 'bg-slate-50 text-slate-600 cursor-not-allowed' : 'bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100'}`}
             placeholder="contact@organization.com"
+          />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <label className=" text-sm font-semibold text-slate-700 flex items-center gap-1">
+          Organization Phone/Contact No. <span className="text-red-500">*</span>
+        </label>
+        <div className="relative">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+            <PhoneCall size={20} />
+          </div>
+          <input
+            type="tel"
+            name="clientPhone"
+            value={clientData.phone}
+            readOnly={!!clientData.organizationName}
+            onChange={(e) => onInputChange(e, "client")}
+            className={`w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium ${clientData.organizationName ? 'bg-slate-50 text-slate-600 cursor-not-allowed' : 'bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100'}`}
+            placeholder="+1 (555) 000-0000"
+          />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <label className=" text-sm font-semibold text-slate-700 flex items-center gap-1">
+          UserName <span className="text-red-500">*</span>
+        </label>
+        <div className="relative">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+            <User size={20} />
+          </div>
+          <input
+            type="text"
+            name="clientUsername"
+            value={clientData.username}
+            readOnly={!!clientData.organizationName}
+            onChange={(e) => onInputChange(e, "client")}
+            className={`w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium ${clientData.organizationName ? 'bg-slate-50 text-slate-600 cursor-not-allowed' : 'bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100'}`}
+            placeholder="Auto-generated from organization name"
           />
         </div>
       </div>
@@ -309,8 +396,9 @@ const ClientForm = ({
               type="password"
               name="password"
               value={clientData.password}
+              readOnly={!!clientData.organizationName}
               onChange={(e) => onInputChange(e, "client")}
-              className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100"
+              className={`w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium ${clientData.organizationName ? 'bg-slate-50 text-slate-600 cursor-not-allowed' : 'bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100'}`}
               placeholder="Enter password"
             />
           </div>
@@ -327,9 +415,10 @@ const ClientForm = ({
             <input
               type="password"
               name="confirmPassword"
-              value={clientData.confirmPassword}
+              value={clientData.confirmPassword }
+              readOnly={!!clientData.organizationName}
               onChange={(e) => onInputChange(e, "client")}
-              className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100"
+              className={`w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 outline-none text-sm font-medium ${clientData.organizationName ? 'bg-slate-50 text-slate-600 cursor-not-allowed' : 'bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100'}`}
               placeholder="Confirm password"
             />
           </div>
@@ -374,11 +463,23 @@ export const RegisterModal = ({ onClose, onSuccess }) => {
   const [clientData, setClientData] = useState(initialClientState);
 
   const [recruitmentData, setRecruitmentData] = useState([]);
+  const [client_Recruitment_Data, set_client_Recruitment_Data] = useState([]);
   const { data, isLoading, isFetching } = useRecruitmentData();
+  const { data: clientRecruitmentData } = useRecruitmentDataForClient();
+
+  // console.log('from client Register form', clientRecruitmentData);
 
   useEffect(() => {
     setRecruitmentData(data);
-  }, [data]);
+    set_client_Recruitment_Data(clientRecruitmentData)
+  }, [data, clientRecruitmentData]);
+
+  // console.log("Recruitment Client:", client_Recruitment_Data);
+  const ClientFN = useMemo(() => C_fullNameOptions(client_Recruitment_Data), [client_Recruitment_Data]);
+  // console.log('Client full name options:', ClientFN);
+  const ClientEmail = useMemo(() => C_createOptions(client_Recruitment_Data, "officialEmail"), [client_Recruitment_Data]);
+  const ClientPhone = useMemo(() => C_createOptions(client_Recruitment_Data, "officialPhone"), [client_Recruitment_Data]);
+  // console.log('Client Email options:', ClientEmail, ClientPhone);
 
   // Options
   const firstNameOptions = useMemo(() => fullNameOptions(recruitmentData), [recruitmentData]);
@@ -399,18 +500,8 @@ export const RegisterModal = ({ onClose, onSuccess }) => {
     setClientData(initialClientState);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    alert('Form submitted successfully!');
-    console.log("Submitting form with data:", { staffData, clientData, activeTab });
-
-    // Reset form after submission
-    resetForms();
-
-    // Call onSuccess callback if provided
-    if (onSuccess) {
-      onSuccess();
-    }
+  const handleSubmit = async (formType) => {
+    alert(formType)
   };
 
   const handleInputChange = (e, type = activeTab) => {
@@ -438,7 +529,7 @@ export const RegisterModal = ({ onClose, onSuccess }) => {
   const handleSelectChange = (selectedOption, fieldName, type = activeTab) => {
     if (type === "staff" && fieldName === "fullName" && selectedOption) {
       const selectedRecord = recruitmentData?.data?.find((item) => item._id === selectedOption.value);
-      console.log("Selected Record for Full Name:", selectedRecord);
+      // console.log("Selected Record for Full Name:", selectedRecord);
       if (selectedRecord) {
         setStaffData((prev) => ({
           ...prev,
@@ -455,6 +546,26 @@ export const RegisterModal = ({ onClose, onSuccess }) => {
       return;
     }
 
+    if (type === "client" && fieldName === "fullName" && selectedOption) {
+      // alert('Client selected: ' + selectedOption.label);
+      const selectedRecord = clientRecruitmentData?.data?.find((item) => item._id === selectedOption.value);
+      // console.log("Selected Record for Client Full Name:", selectedRecord);
+      if (selectedRecord) {
+        const clientName = selectedOption.label.toLowerCase().replace(/\s+/g, "").substring(0, 6); // Take first 10 characters of organization name for username/password
+        setClientData((prev) => ({
+          ...prev,
+          organizationName: selectedOption.label,
+          email : selectedRecord.contact.officialEmail || "",
+          phone: selectedRecord.contact.officialPhone || "",
+          username: `${clientName}${generateUserNameDigit()}`.trim(),
+          Client_id: selectedRecord._id || "",
+          password: `${clientName}${generatePWDigit()}`.trim(),
+          confirmPassword: `${clientName}${generatePWDigit()}`.trim(),
+        }));
+      }
+      return;
+    }
+    
     if (type === "staff") {
       setStaffData((prev) => ({
         ...prev,
@@ -467,6 +578,9 @@ export const RegisterModal = ({ onClose, onSuccess }) => {
       }));
     }
   };
+
+// console.log('from handleSelectChange clientData:', clientData);
+
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -593,7 +707,7 @@ export const RegisterModal = ({ onClose, onSuccess }) => {
 
             {/* Form */}
             <form
-              onSubmit={handleSubmit}
+             onSubmit={(e) => { e.preventDefault(); handleSubmit(activeTab); }}
               className="p-4 sm:p-6 space-y-5 max-h-[65vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100"
             >
               {error && (
@@ -611,14 +725,18 @@ export const RegisterModal = ({ onClose, onSuccess }) => {
                   roleOptions={roleOptions}
                   firstNameOptions={firstNameOptions}
                   customSelectStyles={customSelectStyles}
-                  onSubmit={handleSubmit}
+                 onSubmit={() => handleSubmit("staff")}  
                   loading={loading}
                 />
               ) : (
                 <ClientForm
                   clientData={clientData}
                   onInputChange={handleInputChange}
-                  onSubmit={handleSubmit}
+                  onSelectChange={handleSelectChange}
+                  ClientFN={ClientFN}
+                  firstNameOptions={firstNameOptions}
+                  customSelectStyles={customSelectStyles}
+                  onSubmit={() => handleSubmit("client")}
                   loading={loading}
                 />
               )}

@@ -1,23 +1,23 @@
 import React from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import {
-  ChevronLeft,
-  ChevronRight,
-  LogOut,
-  User,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, LogOut, User } from "lucide-react";
 import logo from "../assets/eimcta.png";
 import { menus } from "../data/data.jsx";
 import { useAuth } from "./hooks/useAuth.js";
+import Skeleton_ from "./skeleton.jsx";
+import { MainLoader } from "./loader.jsx";
 
 const Asidebar = ({ loading, isOpen, setIsOpen }) => {
-
-  const { logout } = useAuth();
-  // const User=sessionStorage.get('user')
-  // console.log()
+  const { isAuthLoading, logout, useMe: { data: { user: { decoded, token } = {} } = {}, isLoading, error } } = useAuth();
+console.log('new user ',decoded)
+const role=sessionStorage.getItem('user')
+console.log('users',JSON.parse(role))
+// JSON.parse
   const location = useLocation();
   const navigate = useNavigate();
-  const updatedMenus = menus[JSON.parse(sessionStorage.getItem('user'))?.role] || [];
+  console.log(isLoading, error, isAuthLoading)
+  const updatedMenus = menus[JSON.parse(role)?.role] || [];
+
   const handleLogOut = async () => {
     try {
       await logout.mutateAsync();
@@ -25,14 +25,12 @@ const Asidebar = ({ loading, isOpen, setIsOpen }) => {
       sessionStorage.removeItem("Token");
       sessionStorage.setItem("isToken", null);
       sessionStorage.removeItem("user");
-      navigate('/', { replace: true })
+      navigate('/', { replace: true });
     } catch (error) {
-      alert('error', error.repsonse)
-      console.log('error logout', error)
-
+      alert('error', error.response);
+      console.log('error logout', error);
     }
-
-  }
+  };
 
   return (
     <div className="flex">
@@ -44,14 +42,14 @@ const Asidebar = ({ loading, isOpen, setIsOpen }) => {
         ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
         {/* Header */}
-        <div className="flex h-20 items-center justify-between px-4 border-b border-orange-50">
+        <div className="flex h-20 items-center justify-between px-4 border-b border-orange-100">
           <div
             className={`flex items-center justify-center overflow-hidden ease-in-out transition-all duration-600
             ${isOpen ? "opacity-100 w-auto" : "opacity-0 w-0 md:opacity-100 md:w-10"}`}
           >
             {isOpen && (
-              loading ? (
-                <div className="animate-pulse bg-neutral-quaternary rounded-full w-48 h-12 md:h-16 lg:h-20"></div>
+              isLoading ? (
+                <div className="animate-pulse bg-amber-50/90 rounded-full w-56 h-12 "></div>
               ) : (
                 <img
                   src={logo}
@@ -72,19 +70,21 @@ const Asidebar = ({ loading, isOpen, setIsOpen }) => {
         </div>
 
         {/* Navigation */}
-        <nav className="mt-6 space-y-1 px-3 overflow-y-auto h-[calc(100dvh-160px)] min-h-[calc(100svh-160px)] custom-scrollbar">
-          {loading ? (
-            // Skeleton loading for navigation items
+        <nav className="space-y-1 flex justify-start mt-4 items-center flex-col
+         px-3 overflow-y-auto 
+         h-[calc(100dvh-160px)] min-h-[calc(100svh-160px)]
+          custom-scrollbar">
+          {isLoading ? (
             Array.from({ length: 6 }).map((_, id) => (
               <div
                 key={id}
                 className={`relative group flex w-full items-center rounded-xl px-3 py-3 animate-pulse
                   ${isOpen ? "ml-0" : "ml-0 md:ml-0"}`}
               >
-                <div className="h-6 w-6 rounded-full bg-neutral-quaternary"></div>
+                <div className="h-6 w-6 rounded-full bg-slate-50/90"></div>
                 <span
                   className={`ml-3 font-bold tracking-wide whitespace-nowrap 
-                   ease-in-out transition-opacity duration-600 bg-neutral-quaternary rounded-full
+                   ease-in-out transition-opacity duration-600 bg-slate-50/90 border border-slate-50 rounded-full
                   ${!isOpen ? "opacity-0 md:hidden w-0" : "opacity-100 w-48"}`}
                 >
                   &nbsp;
@@ -98,10 +98,11 @@ const Asidebar = ({ loading, isOpen, setIsOpen }) => {
                 <Link
                   key={id}
                   to={item.path}
-                  className={`relative group flex w-full items-center rounded-xl px-3 py-3
+                  className={`relative group flex
+                     w-full items-center justify-start text-center rounded-md ${isOpen ? 'px-3' : 'px-3'} py-3
                     transition-all duration-200
                     ${isActive
-                      ? "bg-[#8b0027] text-white shadow-sm"
+                      ? "bg-amber-500  text-white shadow-sm"
                       : "text-slate-600 hover:bg-orange-50 hover:text-orange-600"
                     }`}
                 >
@@ -113,7 +114,6 @@ const Asidebar = ({ loading, isOpen, setIsOpen }) => {
                     }
                   />
 
-                  {/* Label */}
                   <span
                     className={`ml-3 font-bold tracking-wide whitespace-nowrap 
                      ease-in-out transition-opacity duration-600
@@ -122,7 +122,6 @@ const Asidebar = ({ loading, isOpen, setIsOpen }) => {
                     {item.name}
                   </span>
 
-                  {/* Tooltip */}
                   {!isOpen && (
                     <span className="absolute left-full ml-4 hidden
                     ease-in-out md:group-hover:flex items-center justify-center
@@ -138,45 +137,37 @@ const Asidebar = ({ loading, isOpen, setIsOpen }) => {
 
         {/* Footer / Profile Section */}
         <div className="absolute bottom-0 left-0 w-full p-3 border-t border-orange-50 bg-orange-50/30">
-          {loading ? (
-            // Skeleton loading for profile section
+          {isLoading ? (
             <>
               <div className="flex items-center p-2 mb-2 rounded-lg">
-                <div className="h-9 w-9 rounded-full bg-neutral-quaternary flex items-center justify-center text-white shrink-0 shadow-md animate-pulse">
+                <div className="h-9 w-9 rounded-full bg-amber-50/90 flex items-center justify-center text-white shrink-0 shadow-md animate-pulse">
                   <User size={20} className="opacity-0" />
                 </div>
                 <div className={`ml-3 overflow-hidden transition-all duration-600 ${!isOpen ? "w-0 opacity-0" : "w-full opacity-100"}`}>
-                  <div className="animate-pulse bg-neutral-quaternary rounded-full w-48 mb-2 h-4"></div>
-                  <div className="animate-pulse bg-neutral-quaternary rounded-full w-32 h-3"></div>
+                  <div className="animate-pulse bg-amber-50/90 rounded-full w-48 mb-2 h-4"></div>
+                  <div className="animate-pulse bg-amber-50/90 rounded-full w-32 h-3"></div>
                 </div>
               </div>
 
               <div className="flex w-full items-center rounded-lg px-3 py-2">
-                <div className="h-5 w-5 rounded-full bg-neutral-quaternary animate-pulse"></div>
-                <span className={`ml-3 font-bold whitespace-nowrap transition-opacity duration-600 bg-neutral-quaternary rounded-full
+                <div className="h-5 w-5 rounded-full bg-amber-100 animate-pulse"></div>
+                <span className={`ml-3 font-bold whitespace-nowrap transition-opacity duration-600 bg-amber-50/90 rounded-full
                   ${!isOpen ? "opacity-0 md:hidden w-0" : "opacity-100 w-20 h-4"}`}>
                 </span>
               </div>
             </>
           ) : (
-            <>
-
-
-              <button className="flex w-full items-center rounded-lg px-3 py-2
+            <button className="flex w-full items-center rounded-lg px-3 py-2
                 text-slate-600 hover:bg-red-100 hover:text-red-600 transition-colors group" onClick={handleLogOut}>
-                <LogOut size={20} className="text-slate-400 group-hover:text-red-500" />
-                <span className={`ml-3 font-bold whitespace-nowrap transition-opacity duration-600
-                  ${!isOpen ? "opacity-0 md:hidden" : "opacity-100"}`}>
-                  Logout
-                </span>
-              </button>
-            </>
+              <LogOut size={20} className="text-slate-400 group-hover:text-red-500" />
+              <span className={`ml-3 font-bold whitespace-nowrap transition-opacity duration-600
+                ${!isOpen ? "opacity-0 md:hidden" : "opacity-100"}`}>
+                Logout
+              </span>
+            </button>
           )}
         </div>
       </aside>
-
-      {/* Main Content */}
-
     </div>
   );
 };

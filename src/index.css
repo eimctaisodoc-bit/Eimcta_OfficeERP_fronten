@@ -3,11 +3,17 @@
 /* for emp-mgt_client.jsx and leave_mgt_client.jsx */
 /* Custom Scrollbar Styling */
 /* Hide scrollbar for Chrome, Safari and Opera */
+body::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+  display: none;
+}
 .custom-scrollbar::-webkit-scrollbar {
   width: 0px;
   background: transparent;
   display: none;
 }
+
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .custom-scrollbar {
@@ -22,7 +28,7 @@ input:focus {
 }
 
 
-  /* From Uiverse.io by elijahgummer */ 
+/* From Uiverse.io by elijahgummer */
 .sales_btn {
   font: inherit;
   background-color: #f0f0f0;
@@ -39,6 +45,7 @@ input:focus {
   transition: 0.15s ease;
   cursor: pointer;
 }
+
 .sales_btn:active {
   translate: 0 0.225em;
   box-shadow: inset 0 0.03em 0 0 #f4f4f4, 0 0.03em 0 0 #efefef,
@@ -50,7 +57,7 @@ input:focus {
   translate: 0 0.225em;
   background-color: #fffdfa;
   color: #b36b00;
-  box-shadow: 
+  box-shadow:
     inset 0 0.03em 0 0 #ffffff,
     0 0.03em 0 0 #ffca28,
     0 0.0625em 0 0 #ffb300,
@@ -61,3 +68,242 @@ input:focus {
     0 0.225em 1.25em 0 rgba(255, 160, 0, 0.6);
 }
 
+/*  for download animation  */
+@keyframes wave {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes wave-slow {
+  0% {
+    transform: translateX(-50%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-wave {
+  animation: wave 3s linear infinite;
+}
+
+.animate-wave-slow {
+  animation: wave-slow 5s linear infinite;
+}
+/* animated border  */
+@keyframes rotate-border {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes border-glow {
+  0%, 100% { filter: blur(4px); opacity: 0.5; }
+  50% { filter: blur(6px); opacity: 0.7; }
+}
+
+.animated-border-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  z-index: 0;
+  
+  /* Base styling */
+  border: 1px solid #e2e8f0; /* slate-200 */
+  border-radius: 12px; /* lg */
+  background: #ffffff;
+  
+  /* Smooth transitions */
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Gradient border layer - Enhanced with multiple colors and smoother gradient */
+.animated-border-card::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  z-index: -2;
+  
+  /* Advanced conic gradient with more color stops for smoother transitions */
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    transparent 0deg,
+    #fef3c7 60deg,   /* amber-100 */
+    #fbbf24 120deg,   /* amber-400 */
+    #f97316 180deg,   /* orange-500 */
+    #fb923c 240deg,   /* orange-400 */
+    #fed7aa 300deg,   /* orange-200 */
+    transparent 360deg
+  );
+  
+  animation: rotate-border 3s linear infinite;
+  opacity: 0;
+  transform-origin: center center;
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Smoother rendering */
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* Inner mask with subtle shadow */
+.animated-border-card::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+  
+  background: #ffffff;
+  border-radius: 10px; /* Slightly less than parent */
+  
+  /* Subtle inner shadow for depth */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+  
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  will-change: opacity;
+  pointer-events: none;
+}
+
+/* Optional: Add a subtle glow animation */
+.animated-border-card:hover::before {
+  opacity: 0.7;
+  animation: rotate-border 2s linear infinite;
+}
+
+.animated-border-card:hover::after {
+  opacity: 1;
+}
+
+/* Professional hover effects */
+.animated-border-card:hover {
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 
+    0 10px 25px -5px rgba(249, 115, 22, 0.1),
+    0 8px 10px -6px rgba(249, 115, 22, 0.05);
+}
+
+/* Optional: Add a subtle scale effect for the content */
+.animated-border-card > * {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-border-card:hover > * {
+  transform: scale(1.02);
+}
+
+/* Alternative: Smooth variant with softer edges */
+.animated-border-card.smooth {
+  border-radius: 16px;
+}
+
+.animated-border-card.smooth::after {
+  border-radius: 14px;
+}
+
+/* Premium variant with metallic effect */
+.animated-border-card.premium::before {
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    transparent 0deg,
+    #fef9c3 45deg,   /* amber-200 */
+    #fbbf24 90deg,    /* amber-400 */
+    #f97316 135deg,   /* orange-500 */
+    #f59e0b 180deg,   /* amber-600 */
+    #f97316 225deg,   /* orange-500 */
+    #fcd34d 270deg,   /* amber-300 */
+    #fef3c7 315deg,   /* amber-100 */
+    transparent 360deg
+  );
+  filter: blur(2px);
+}
+
+/* Fast variant for more dynamic motion */
+.animated-border-card.fast:hover::before {
+  animation-duration: 1.5s;
+}
+
+/* Subtle variant for elegant appearance */
+.animated-border-card.subtle::before {
+  opacity: 0;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    transparent,
+    #fcd34d 90deg,   /* amber-300 */
+    #fbbf24 180deg,   /* amber-400 */
+    #fcd34d 270deg,   /* amber-300 */
+    transparent 360deg
+  );
+}
+
+.animated-border-card.subtle:hover::before {
+  opacity: 0.4;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .animated-border-card {
+    background: #1e293b; /* slate-800 */
+    border-color: #334155; /* slate-700 */
+  }
+  
+  .animated-border-card::after {
+    background: #1e293b; /* slate-800 */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .animated-border-card:hover {
+    box-shadow: 
+      0 10px 25px -5px rgba(249, 115, 22, 0.2),
+      0 8px 10px -6px rgba(249, 115, 22, 0.1);
+  }
+}
+
+/* Reduced motion preference support */
+@media (prefers-reduced-motion: reduce) {
+  .animated-border-card::before {
+    animation-duration: 4s;
+  }
+  
+  .animated-border-card:hover {
+    transform: none;
+  }
+  
+  .animated-border-card:hover > * {
+    transform: none;
+  }
+}
+/* Loader gradient   */
+.loader-gradient {
+  background: linear-gradient(90deg, #f59e0b, #fb923c, #fbbf24);
+  padding: 4px;
+  border-radius: 50%;
+}
+/* chat bg pulse */
+@keyframes pulseGlow {
+  0% {
+    background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0 0, 0 0;
+    opacity: 0.7;
+  }
+  25% {
+    background-position: 5% 3%, -3% 5%, 4% -2%, -4% 3%, 0 0, 0 0;
+  }
+  50% {
+    background-position: -4% 5%, 6% -3%, -5% 4%, 3% -4%, 0 0, 0 0;
+    opacity: 1;
+  }
+  75% {
+    background-position: 3% -4%, -5% 2%, 3% 5%, -3% -4%, 0 0, 0 0;
+  }
+  100% {
+    background-position: -3% -3%, 4% 4%, -4% -2%, 2% 3%, 0 0, 0 0;
+    opacity: 0.8;
+  }
+}

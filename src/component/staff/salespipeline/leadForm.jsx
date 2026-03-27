@@ -11,35 +11,69 @@ const customSelectStyles = (hasError) => ({
             ? "2px solid #ef4444"
             : state.isFocused
                 ? "2px solid #f59e0b"
-                : "1px solid #e2e8f0",
-        borderRadius: "14px",
-        backgroundColor: "#f8fafc", // Slightly off-white for depth
+                : "1px solid #e5e7eb",
+        borderRadius: "12px",
+        backgroundColor: "#ffffff",
         boxShadow: state.isFocused
             ? hasError
-                ? "0 0 0 4px rgba(239, 68, 68, 0.1)"
-                : "0 0 0 4px rgba(245, 158, 11, 0.1)"
+                ? "0 0 0 3px rgba(239,68,68,0.15)"
+                : "0 0 0 3px rgba(245,158,11,0.18)"
             : "none",
         "&:hover": {
             borderColor: hasError ? "#ef4444" : "#f59e0b",
-            backgroundColor: "white",
         },
-        transition: "all 0.3s ease",
+        transition: "all 0.2s ease",
     }),
+
     menu: (base) => ({
         ...base,
-        borderRadius: "14px",
+        borderRadius: "12px",
         overflow: "hidden",
-        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-        padding: "4px",
+        border: "1px solid #e5e7eb",
+        backgroundColor: "#ffffff",
+        boxShadow: "0 12px 20px rgba(0,0,0,0.08)",
+        padding: "6px",
     }),
+
     option: (base, state) => ({
         ...base,
-        backgroundColor: state.isSelected ? "#f59e0b" : state.isFocused ? "#fffbeb" : "transparent",
-        color: state.isSelected ? "white" : "#334155",
-        borderRadius: "10px",
+        backgroundColor: state.isSelected
+            ? state.data.color
+            : state.isFocused
+                ? `${state.data.color}20`
+                : "transparent",
+        color: state.isSelected ? "#fff" : "#334155",
+        borderRadius: "8px",
         marginBlock: "2px",
+        padding: "10px 12px",
         cursor: "pointer",
-        "&:active": { backgroundColor: "#fbbf24" },
+        "&:active": {
+            backgroundColor: state.data.color,
+            color: "#fff",
+        },
+    }),
+
+    /* MULTI SELECT TAG */
+    multiValue: (base, { data }) => ({
+        ...base,
+        backgroundColor: `${data.color}20`,
+        borderRadius: "8px",
+        paddingLeft: "4px",
+    }),
+
+    multiValueLabel: (base, { data }) => ({
+        ...base,
+        color: data.color,
+        fontWeight: 600,
+    }),
+
+    multiValueRemove: (base, { data }) => ({
+        ...base,
+        color: data.color,
+        ":hover": {
+            backgroundColor: data.color,
+            color: "#fff",
+        },
     }),
 });
 
@@ -47,10 +81,36 @@ const LeadType = [{ label: "Cold Call", value: "cold_call" }, { label: "Referral
 const LeadSource = [{ label: "Cold Call", value: "cold_call" }, { label: "Referral", value: "referral" }, { label: "Digital Marketing", value: "digital_marketing" }];
 const Lead = [{ label: "Cold Call", value: "cold_call" }, { label: "Referral", value: "referral" }, { label: "Digital Marketing", value: "digital_marketing" }];
 const LeadChannel = [{ label: "WhatsApp", value: "whatsapp" }, { label: "Facebook", value: "facebook" }, { label: "Email", value: "email" }];
-
-
-
-
+const servicesInterested = [
+    // Core Standards (Blue/Green/Red/Gold)
+    { label: "ISO 9001:2015 QMS (Quality Management System)", value: "iso9001", color: "#3b82f6" }, // Blue
+    { label: "ISO 14001:2015 EMS (Environmental Management System)", value: "iso14001", color: "#10b981" }, // Green
+    { label: "ISO 45001:2018 OHSMS (Occupational Health & Safety Management System)", value: "iso45001", color: "#ef4444" }, // Red
+    { label: "ISO 27001:2022 ISMS (Information Security Management System)", value: "iso27001", color: "#f59e0b" }, // Gold/Yellow
+    
+    // Food & Life Sciences (Orange/Deep Red)
+    { label: "ISO 22000:2018 FSMS (Food Safety Management System)", value: "iso22000", color: "#f97316" }, // Orange
+    { label: "HACCP Certification (Hazard Analysis & Critical Control Points)", value: "haccp", color: "#ea580c" }, // Deep Orange
+    { label: "HALAL Certification", value: "halal", color: "#16a34a" }, // Dark Green (Standard for Halal)
+    { label: "ISO 15189:2022 Medical Laboratory QMS", value: "iso15189", color: "#8b5cf6" }, // Purple (Clinical)
+    { label: "GMP (Good Manufacturing Practices)", value: "gmp", color: "#0ea5e9" }, // Sky Blue
+    
+    // Technical & Specialized (Varying)
+    { label: "ISO 50001:2018 EnMS (Energy Management System)", value: "iso50001", color: "#06b6d4" }, // Cyan
+    { label: "ISO 21001:2025 EOMS (Educational Organizations Management System)", value: "iso21001", color: "#6366f1" }, // Indigo
+    { label: "ISO 55001:2024 Asset Management System", value: "iso55001", color: "#64748b" }, // Slate/Gray
+    { label: "ISO 41001:2018 Facility Management System", value: "iso41001", color: "#475569" }, // Dark Slate
+    
+    // Compliance & Supply Chain (Pink/Purple/Brown)
+    { label: "SMETA Sedex Audits", value: "smeta", color: "#ec4899" }, // Pink (Sedex Branding)
+    { label: "RBA Compliance", value: "rba", color: "#1e3a8a" }, // Navy
+    { label: "CE Marking (Conformité Européenne)", value: "ce_marking", color: "#1d4ed8" }, // EU Blue
+    { label: "ISO 26000:2010 Social Responsibility Guidance", value: "iso26000", color: "#d946ef" }, // Magenta
+    
+    // Services & Support
+    { label: "Training Programs", value: "training_programs", color: "#f43f5e" }, // Rose
+    { label: "Third Party Audits", value: "third_party_audits", color: "#000000" } // Black/Neutral
+];
 
 const LeadForm = ({ onClose }) => {
     const [activeTab, setActiveTab] = useState('lead');
@@ -239,6 +299,7 @@ const LeadForm = ({ onClose }) => {
                                             name="leadSource"
                                             value={leadData.leadSource}
                                             options={LeadType}
+
                                             styles={customSelectStyles(!!leadErrors.leadSource)}
                                             onChange={(option) => { handleInputChange(option, 'lead', 'leadSource'); validateField('leadSource', option, 'lead'); }}
                                         />
@@ -270,7 +331,8 @@ const LeadForm = ({ onClose }) => {
                                         <Select
                                             name='productInterest'
                                             value={leadData.productInterest}
-                                            options={Lead}
+                                            options={servicesInterested}
+                                            isMulti={true}
                                             styles={customSelectStyles(!!leadErrors.productInterest)}
                                             onChange={(option) => { handleInputChange(option, 'lead', 'productInterest'); validateField('productInterest', option, 'lead'); }}
 
@@ -316,9 +378,9 @@ const LeadForm = ({ onClose }) => {
 
                                         <div className="flex flex-col gap-1.5 sm:gap-2 sm:col-span-2">
                                             <label className="text-xs sm:text-sm font-semibold text-slate-700">Organization Address</label>
-                                            <input type="text" name="organizationAddress" value={orgData.organizationAddress} 
-                                            placeholder="Full Street Address, City, Country" 
-                                            className={`p-2 sm:p-3 text-sm bg-slate-50 rounded-md focus:ring-2 ${!orgErrors.organizationAddress ? 'focus:ring-amber-500 outline-none' : ''} focus:outline-none ${orgErrors.organizationAddress ? 'border-2 border-red-500' : 'border border-slate-100'}`} onChange={(e) => handleInputChange(e, 'org')} onBlur={(e) => validateField(e.target.name, e.target.value, 'org')} />
+                                            <input type="text" name="organizationAddress" value={orgData.organizationAddress}
+                                                placeholder="Full Street Address, City, Country"
+                                                className={`p-2 sm:p-3 text-sm bg-slate-50 rounded-md focus:ring-2 ${!orgErrors.organizationAddress ? 'focus:ring-amber-500 outline-none' : ''} focus:outline-none ${orgErrors.organizationAddress ? 'border-2 border-red-500' : 'border border-slate-100'}`} onChange={(e) => handleInputChange(e, 'org')} onBlur={(e) => validateField(e.target.name, e.target.value, 'org')} />
                                             {orgErrors.organizationAddress && <p className="mt-1 text-xs text-red-500">{orgErrors.organizationAddress}</p>}
                                         </div>
                                         <div className="flex flex-col gap-1.5 sm:gap-2 sm:col-span-2">

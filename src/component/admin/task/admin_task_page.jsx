@@ -214,16 +214,10 @@ export const Admin_task_page = () => {
 
     const iconMap = {
       pdf: { icon: <FileText size={14} />, color: "text-rose-600 bg-rose-50", label: "PDF" },
-      excel: { icon: <FileSpreadsheet size={14} />, color: "text-emerald-600 bg-emerald-50", label: "Excel" },
-      xlsx: { icon: <FileSpreadsheet size={14} />, color: "text-emerald-600 bg-emerald-50", label: "Excel" },
-      xls: { icon: <FileSpreadsheet size={14} />, color: "text-emerald-600 bg-emerald-50", label: "Excel" },
-      word: { icon: <FileText size={14} />, color: "text-blue-600 bg-blue-50", label: "Word" },
-      doc: { icon: <FileText size={14} />, color: "text-blue-600 bg-blue-50", label: "Word" },
-      docx: { icon: <FileText size={14} />, color: "text-blue-600 bg-blue-50", label: "Word" },
-      ppt: { icon: <File size={14} />, color: "text-orange-600 bg-orange-50", label: "PPT" },
+      xlsx: { icon: <FileSpreadsheet size={14} />, color: "text-emerald-600 bg-emerald-50", label: "Excelx" },
+      docx: { icon: <FileText size={14} />, color: "text-blue-600 bg-blue-50", label: "Wordx" },
       pptx: { icon: <File size={14} />, color: "text-orange-600 bg-orange-50", label: "PPT" },
       txt: { icon: <FileType size={14} />, color: "text-slate-600 bg-slate-50", label: "Text" },
-      image: { icon: <FileImage size={14} />, color: "text-amber-600 bg-amber-50", label: "Image" },
       jpg: { icon: <FileImage size={14} />, color: "text-amber-600 bg-amber-50", label: "Image" },
       jpeg: { icon: <FileImage size={14} />, color: "text-amber-600 bg-amber-50", label: "Image" },
       png: { icon: <FileImage size={14} />, color: "text-amber-600 bg-amber-50", label: "Image" },
@@ -234,7 +228,6 @@ export const Admin_task_page = () => {
       video: { icon: <FileVideo size={14} />, color: "text-purple-600 bg-purple-50", label: "Video" },
       mp4: { icon: <FileVideo size={14} />, color: "text-purple-600 bg-purple-50", label: "Video" },
       mov: { icon: <FileVideo size={14} />, color: "text-purple-600 bg-purple-50", label: "Video" },
-      figma: { icon: <File size={14} />, color: "text-fuchsia-600 bg-fuchsia-50", label: "Figma" },
     };
 
     return iconMap[type] || { icon: <File size={14} />, color: "text-slate-500 bg-slate-50", label: "File" };

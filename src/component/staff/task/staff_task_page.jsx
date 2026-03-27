@@ -15,7 +15,8 @@ import {
   X,
   Plus,
   Download,
-  FileText
+  FileText,
+  Trash2
 } from 'lucide-react';
 import { DprForm } from './dprFrom';
 
@@ -63,7 +64,8 @@ export const Staff_task_page = () => {
   const [tasks, setTasks] = useState(INITIAL_TASKS);
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedTaskId, setExpandedTaskId] = useState(null);
-  const [isDpr, setIsDpr] = useState(false)
+  const [isDpr, setIsDpr] = useState(false);
+  const [viewMode, setViewMode] = useState('dpr'); // 'dpr' or 'task'
 
   const toggleExpand = (id) => {
     setExpandedTaskId(expandedTaskId === id ? null : id);
@@ -75,6 +77,11 @@ export const Staff_task_page = () => {
       return task;
     });
     setTasks(updatedTasks);
+  };
+
+  const removeTask = (taskId) => {
+    const filteredTasks = tasks.filter(task => task.id !== taskId);
+    setTasks(filteredTasks);
   };
 
   const filteredTasks = useMemo(() => {
@@ -108,227 +115,278 @@ export const Staff_task_page = () => {
         </header>
 
         {/* Search Bar */}
-        <div className="mb-10 flex items-center gap-4">
+        <div className="mb-10 flex flex-col lg:flex-row items-center gap-4 w-full">
 
-          {/* Search Input */}
-          <div className="relative flex-1">
+          {/* Search Input - Scales padding based on viewport */}
+          <div className="relative w-full lg:flex-1">
             <Search
               className="absolute left-4 top-1/2 -translate-y-1/2 text-amber-500"
-              size={22}
+              size={20}
             />
-
             <input
               type="text"
               placeholder="Filter tasks..."
-              className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl 
+              className="w-full pl-12 pr-4 py-3 md:py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl 
                  focus:outline-none focus:ring-4 focus:ring-orange-500/10 
-                 focus:border-orange-400  transition-all 
-                 placeholder:text-slate-400"
+                 focus:border-orange-400 transition-all placeholder:text-slate-400"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
-          {/* Button */}
-          <button
-            className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 
-               text-white px-5 py-4 rounded-2xl 
-               transition-all duration-200 active:scale-95"
-            onClick={() => { setIsDpr(true) }}>
-            <Plus size={20} />
-            <span className="font-medium">DPR</span>
-          </button>
+          {/* Controls Group - Ensuring alignment across screen sizes */}
+          <div className="flex items-center gap-3 w-full lg:w-auto">
 
+            {/* Task Pill */}
+            <div
+              className="flex items-center gap-3  p-2 cursor-pointer transition-all
+    bg-slate-50 border-2 border-slate-100 rounded-xl"
+            >
+              <button
+                onClick={() => setViewMode('dpr')}
+                className={`shadow-sm px-3 py-2 rounded-lg cursor-pointer text-xs font-black transition-all ${viewMode === 'dpr'
+                  ? 'bg-orange-500 text-white border border-orange-500'
+                  : 'bg-white text-amber-600 border border-slate-100 hover:bg-orange-50'
+                  }`}
+              >
+                DPR
+              </button>
+
+              <button
+                onClick={() => setViewMode('task')}
+                className={`shadow-sm px-3 py-2 rounded-lg cursor-pointer  text-xs font-black transition-all ${viewMode === 'task'
+                  ? 'bg-orange-500 text-white border border-orange-500'
+                  : 'bg-white text-amber-600 border border-slate-100 hover:bg-orange-50'
+                  }`}
+              >
+                Task
+              </button>
+            </div>
+
+            {/* Add Button */}
+
+
+
+
+            <button
+              className="flex items-center justify-center gap-2
+    bg-amber-500 hover:bg-amber-600
+    text-white  p-3  lg:px-3 
+    rounded-xl transition-all duration-200
+    active:scale-95 w-full lg:w-auto"
+              onClick={() => setIsDpr(true)}
+            >
+              <Plus size={20} />
+              <span className="font-medium whitespace-nowrap ">DPR</span>
+            </button>
+
+          </div>
         </div>
 
         {/* Task List */}
         <div className="space-y-5">
-          {filteredTasks.length > 0 ? (
-            filteredTasks.map((task) => {
-              const isExpanded = expandedTaskId === task.id;
-              return (
-                <div
-                  key={task.id}
-                  className={`group bg-white border-2 rounded-3xl overflow-hidden transition-all duration-300 ${isExpanded
-                    ? 'border-orange-400 shadow-xl shadow-orange-500/5 translate-y-[-2px]'
-                    : 'border-slate-100 hover:border-amber-200 hover:shadow-lg hover:shadow-slate-200/50'
-                    }`}
-                >
-                  {/* Card Header */}
+          {viewMode === 'task' ? (
+            filteredTasks.length > 0 ? (
+              filteredTasks.map((task) => {
+                const isExpanded = expandedTaskId === task.id;
+                return (
                   <div
-                    onClick={() => toggleExpand(task.id)}
-                    className="p-6 cursor-pointer flex items-center gap-5"
+                    key={task.id}
+                    className={`group bg-white border-2 rounded-3xl overflow-hidden transition-all duration-300 ${isExpanded
+                      ? 'border-orange-400 shadow-xl shadow-orange-500/5 translate-y-[-2px]'
+                      : 'border-slate-100 hover:border-amber-200 hover:shadow-lg hover:shadow-slate-200/50'
+                      }`}
                   >
-                    <div className={`p-3 rounded-2xl transition-colors ${isExpanded ? 'bg-orange-100' : 'bg-slate-50'}`}>
-                      <ShieldCheck className={isExpanded ? 'text-orange-600' : 'text-slate-400'} size={24} />
+                    {/* Card Header */}
+                    <div
+                      onClick={() => toggleExpand(task.id)}
+                      className="p-6 cursor-pointer flex items-center gap-5"
+                    >
+                      <div className={`p-3 rounded-2xl transition-colors ${isExpanded ? 'bg-orange-100' : 'bg-slate-50'}`}>
+                        <ShieldCheck className={isExpanded ? 'text-orange-600' : 'text-slate-400'} size={24} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className={`text-xl transition-all ${task.currentStatus === 'Completed' ? 'text-slate-300 font-normal line-through' : 'text-slate-800'}`} style={headerStyle}>
+                          {task.title}
+                        </h3>
+                        {!isExpanded && (
+                          <p className="text-sm text-slate-500 truncate mt-1">
+                            {task.description}
+                          </p>
+                        )}
+                      </div>
+                      <div className={`p-2 rounded-xl transition-all duration-300 ${isExpanded ? 'rotate-180 bg-orange-500 text-white shadow-md' : 'bg-amber-50 text-amber-600'}`}>
+                        <ChevronDown size={20} />
+                      </div>
+                      <button
+                        onClick={() => removeTask(task.id)}
+                        className="p-2 rounded-xl hover:bg-red-50 text-slate-400 hover:text-red-500 transition-all"
+                      >
+                        <Trash2 size={20} />
+                      </button>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className={`text-xl transition-all ${task.currentStatus === 'Completed' ? 'text-slate-300 font-normal line-through' : 'text-slate-800'}`} style={headerStyle}>
-                        {task.title}
-                      </h3>
-                      {!isExpanded && (
-                        <p className="text-sm text-slate-500 truncate mt-1">
-                          {task.description}
-                        </p>
-                      )}
-                    </div>
-                    <div className={`p-2 rounded-xl transition-all duration-300 ${isExpanded ? 'rotate-180 bg-orange-500 text-white shadow-md' : 'bg-amber-50 text-amber-600'}`}>
-                      <ChevronDown size={20} />
-                    </div>
-                  </div>
 
-                  {/* Expanded Section */}
-                  <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[1200px] border-t-2 border-slate-50' : 'max-h-0'}`}>
-                    <div className="p-6 bg-slate-50/20">
-                      <div className="grid grid-cols-1 gap-8 mb-8">
-                        <div className=" space-y-6">
-                          <div>
-                            <label className="text-xs font-black tracking-widest text-amber-600 uppercase mb-2 block">Objective</label>
-                            <p className="text-base text-slate-700 leading-relaxed font-medium">{task.description}</p>
-                          </div>
-                          <div className="bg-white p-5 rounded-2xl border-2 border-slate-100 shadow-sm">
-                            <label className="text-xs font-black tracking-widest text-orange-500 uppercase mb-2 block">Execution Details</label>
-                            <p className="text-sm text-slate-600 leading-relaxed italic">
-                              {task.fullDetails}
-                            </p>
-                          </div>
-                          <div className="flex items-start gap-9 bg-white w-full">
+                    {/* Expanded Section */}
+                    <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[1200px] border-t-2 border-slate-50' : 'max-h-0'}`}>
+                      <div className="p-6 bg-slate-50/20">
+                        <div className="grid grid-cols-1 gap-8 mb-8">
+                          <div className=" space-y-6">
+                            <div>
+                              <label className="text-xs font-black tracking-widest text-amber-600 uppercase mb-2 block">Objective</label>
+                              <p className="text-base text-slate-700 leading-relaxed font-medium">{task.description}</p>
+                            </div>
+                            <div className="bg-white p-5 rounded-2xl border-2 border-slate-100 shadow-sm">
+                              <label className="text-xs font-black tracking-widest text-orange-500 uppercase mb-2 block">Execution Details</label>
+                              <p className="text-sm text-slate-600 leading-relaxed italic">
+                                {task.fullDetails}
+                              </p>
+                            </div>
+                            <div className="flex items-start gap-9 bg-white w-full">
 
-                            {/* Left Side - Admin */}
-                            <div className="bg-white p-4 w-[600px]">
-                              <div className="flex items-center gap-2 mb-4">
-                                <Paperclip className="w-5 h-5 text-amber-600" />
-                                <h3
-                                  className="text-lg text-gray-800"
-                                  style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 600 }}
-                                >
-                                  Attachment (Admin)
-                                </h3>
+                              {/* Left Side - Admin */}
+                              <div className="bg-white p-4 w-[600px]">
+                                <div className="flex items-center gap-2 mb-4">
+                                  <Paperclip className="w-5 h-5 text-amber-600" />
+                                  <h3
+                                    className="text-lg text-gray-800"
+                                    style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 600 }}
+                                  >
+                                    Attachment (Admin)
+                                  </h3>
+                                </div>
+
+                                <div className="border border-slate-100 rounded-xl hover:bg-slate-100 cursor-pointer p-3 flex items-center justify-between transition">
+                                  <div className="flex items-center gap-3">
+                                    <FileText className="w-4 h-4 text-blue-500" />
+                                    <div className="flex flex-col">
+                                      <span className="text-sm font-medium text-gray-800">
+                                        document.pdf
+                                      </span>
+                                      <span className="text-xs text-gray-500">
+                                        2.4 MB
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <button className="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-md transition">
+                                    <Download className="w-4 h-4" />
+                                    Download
+                                  </button>
+                                </div>
                               </div>
 
-                              <div className="border border-slate-100 rounded-xl hover:bg-slate-100 cursor-pointer p-3 flex items-center justify-between transition">
-                                <div className="flex items-center gap-3">
-                                  <FileText className="w-4 h-4 text-blue-500" />
-                                  <div className="flex flex-col">
-                                    <span className="text-sm font-medium text-gray-800">
-                                      document.pdf
-                                    </span>
-                                    <span className="text-xs text-gray-500">
-                                      2.4 MB
-                                    </span>
+                              {/* Vertical Divider */}
+                              <div className="w-px bg-slate-200 self-stretch"></div>
+
+                              {/* Right Side - You */}
+                              <div className="bg-white p-4 w-[600px]">
+                                <div className="flex items-center gap-2 mb-4">
+                                  <Paperclip className="w-5 h-5 text-amber-600" />
+                                  <h3
+                                    className="text-lg text-gray-800"
+                                    style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 600 }}
+                                  >
+                                    Attachment (You)
+                                  </h3>
+                                </div>
+
+                                <div className="border border-slate-100 rounded-xl hover:bg-slate-100 cursor-pointer p-3 flex items-center justify-between transition">
+                                  <div className="flex items-center gap-3">
+                                    <FileText className="w-4 h-4 text-blue-500" />
+                                    <div className="flex flex-col">
+                                      <span className="text-sm font-medium text-gray-800">
+                                        document.pdf
+                                      </span>
+                                      <span className="text-xs text-gray-500">
+                                        2.4 MB
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <button className="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-md transition">
+                                    <Download className="w-4 h-4" />
+                                    Download
+                                  </button>
+                                </div>
+                              </div>
+
+                            </div>
+
+                            <div className="space-y-4">
+                              <div className="bg-amber-50/50 p-5 rounded-2xl border-2 border-amber-100">
+                                <label className="text-xs font-black tracking-widest text-amber-700 uppercase mb-3 block">Metadata</label>
+                                <div className="space-y-3">
+                                  <div className="flex items-center gap-3 text-sm font-bold text-slate-700">
+                                    <User size={18} className="text-orange-500" />
+                                    {task.assignee}
+                                  </div>
+                                  <div className="flex items-center gap-3 text-sm font-bold text-slate-700">
+                                    <Calendar size={18} className="text-amber-500" />
+                                    {task.dueDate}
                                   </div>
                                 </div>
-
-                                <button className="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-md transition">
-                                  <Download className="w-4 h-4" />
-                                  Download
-                                </button>
                               </div>
+
                             </div>
-
-                            {/* Vertical Divider */}
-                            <div className="w-px bg-slate-200 self-stretch"></div>
-
-                            {/* Right Side - You */}
-                            <div className="bg-white p-4 w-[600px]">
-                              <div className="flex items-center gap-2 mb-4">
-                                <Paperclip className="w-5 h-5 text-amber-600" />
-                                <h3
-                                  className="text-lg text-gray-800"
-                                  style={{ fontFamily: "'Roboto Slab', serif", fontWeight: 600 }}
-                                >
-                                  Attachment (You)
-                                </h3>
-                              </div>
-
-                              <div className="border border-slate-100 rounded-xl hover:bg-slate-100 cursor-pointer p-3 flex items-center justify-between transition">
-                                <div className="flex items-center gap-3">
-                                  <FileText className="w-4 h-4 text-blue-500" />
-                                  <div className="flex flex-col">
-                                    <span className="text-sm font-medium text-gray-800">
-                                      document.pdf
-                                    </span>
-                                    <span className="text-xs text-gray-500">
-                                      2.4 MB
-                                    </span>
-                                  </div>
-                                </div>
-
-                                <button className="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-md transition">
-                                  <Download className="w-4 h-4" />
-                                  Download
-                                </button>
-                              </div>
-                            </div>
-
                           </div>
 
-                          <div className="space-y-4">
-                            <div className="bg-amber-50/50 p-5 rounded-2xl border-2 border-amber-100">
-                              <label className="text-xs font-black tracking-widest text-amber-700 uppercase mb-3 block">Metadata</label>
-                              <div className="space-y-3">
-                                <div className="flex items-center gap-3 text-sm font-bold text-slate-700">
-                                  <User size={18} className="text-orange-500" />
-                                  {task.assignee}
-                                </div>
-                                <div className="flex items-center gap-3 text-sm font-bold text-slate-700">
-                                  <Calendar size={18} className="text-amber-500" />
-                                  {task.dueDate}
-                                </div>
-                              </div>
-                            </div>
-
-                          </div>
                         </div>
 
-                      </div>
+                        {/* Controls Row */}
+                        <div className="grid grid-cols-3 gap-4 pt-6 border-t-2 border-slate-100">
+                          <button
+                            onClick={() => updateTaskStatus(task.id, 'Completed')
 
-                      {/* Controls Row */}
-                      <div className="grid grid-cols-3 gap-4 pt-6 border-t-2 border-slate-100">
-                        <button
-                          onClick={() => updateTaskStatus(task.id, 'Completed')
-                            
-                          }
-                          className={`flex items-center justify-center gap-2 py-4 rounded-2xl text-xs font-black transition-all border-2 shadow-sm ${task.currentStatus === 'Completed'
-                            ? 'bg-emerald-600 text-white border-emerald-600'
-                            : 'bg-white text-emerald-600 border-emerald-100 hover:bg-emerald-600 hover:text-white'
-                            }`}
-                        >
-                          <ThumbsUp size={18} className={task.currentStatus === 'Completed' ? 'text-white' : 'text-emerald-500'} /> COMPLETE
-                        </button>
+                            }
+                            className={`flex items-center justify-center gap-2 py-4 rounded-2xl text-xs font-black transition-all border-2 shadow-sm ${task.currentStatus === 'Completed'
+                              ? 'bg-emerald-600 text-white border-emerald-600'
+                              : 'bg-white text-emerald-600 border-emerald-100 hover:bg-emerald-600 hover:text-white'
+                              }`}
+                          >
+                            <ThumbsUp size={18} className={task.currentStatus === 'Completed' ? 'text-white' : 'text-emerald-500'} /> COMPLETE
+                          </button>
 
-                        <button
-                          onClick={() => updateTaskStatus(task.id, 'Revision Needed')}
-                          className={`flex items-center justify-center gap-2 py-4 rounded-2xl text-xs font-black transition-all border-2 shadow-sm ${task.currentStatus === 'Revision Needed'
-                            ? 'bg-orange-600 text-white border-orange-600 shadow-orange-100'
-                            : 'bg-white text-orange-600 border-orange-100 hover:bg-orange-600 hover:text-white'
-                            }`}
-                        >
-                          <ThumbsDown size={18} className={task.currentStatus === 'Revision Needed' ? 'text-white' : 'text-orange-500'} /> REJECT
-                        </button>
+                          <button
+                            onClick={() => updateTaskStatus(task.id, 'Revision Needed')}
+                            className={`flex items-center justify-center gap-2 py-4 rounded-2xl text-xs font-black transition-all border-2 shadow-sm ${task.currentStatus === 'Revision Needed'
+                              ? 'bg-orange-600 text-white border-orange-600 shadow-orange-100'
+                              : 'bg-white text-orange-600 border-orange-100 hover:bg-orange-600 hover:text-white'
+                              }`}
+                          >
+                            <ThumbsDown size={18} className={task.currentStatus === 'Revision Needed' ? 'text-white' : 'text-orange-500'} /> REJECT
+                          </button>
 
-                        <button
-                          onClick={() => updateTaskStatus(task.id, 'Underway')}
-                          className={`flex items-center justify-center gap-2 py-4 rounded-2xl text-xs font-black transition-all border-2 shadow-sm ${task.currentStatus === 'Underway'
-                            ? 'bg-slate-800 text-white border-slate-800'
-                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-800 hover:text-white'
-                            }`}
-                        >
-                          <RotateCcw size={18} className={task.currentStatus === 'Underway' ? 'text-white' : 'text-amber-500'} /> INCOMPLETE
-                        </button>
+                          <button
+                            onClick={() => updateTaskStatus(task.id, 'Underway')}
+                            className={`flex items-center justify-center gap-2 py-4 rounded-2xl text-xs font-black transition-all border-2 shadow-sm ${task.currentStatus === 'Underway'
+                              ? 'bg-slate-800 text-white border-slate-800'
+                              : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-800 hover:text-white'
+                              }`}
+                          >
+                            <RotateCcw size={18} className={task.currentStatus === 'Underway' ? 'text-white' : 'text-amber-500'} /> INCOMPLETE
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
+                );
+              })
+            ) : (
+              <div className="bg-slate-50 border-4 border-dashed border-slate-100 rounded-3xl p-16 text-center">
+                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-amber-200 mx-auto mb-6 shadow-inner">
+                  <Info size={40} />
                 </div>
-              );
-            })
+                <h3 className="text-slate-800 font-bold mb-2 text-xl" style={headerStyle}>No DPRs Found</h3>
+                <p className="text-slate-400 text-sm">Refine your search parameters to find specific DPRs.</p>
+              </div>
+            )
           ) : (
             <div className="bg-slate-50 border-4 border-dashed border-slate-100 rounded-3xl p-16 text-center">
               <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-amber-200 mx-auto mb-6 shadow-inner">
                 <Info size={40} />
               </div>
-              <h3 className="text-slate-800 font-bold mb-2 text-xl" style={headerStyle}>No Tasks Found</h3>
-              <p className="text-slate-400 text-sm">Refine your search parameters to find specific tasks.</p>
+              <h3 className="text-slate-800 font-bold mb-2 text-xl" style={headerStyle}>No Tasks Available</h3>
+              <p className="text-slate-400 text-sm">Tasks section is currently empty.</p>
             </div>
           )}
         </div>

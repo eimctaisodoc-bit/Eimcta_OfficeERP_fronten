@@ -1,23 +1,35 @@
-import React from 'react'
-import { Triangle } from 'react-loader-spinner'
-export function Loader() {
-    return (<Triangle
+import React from "react";
+import { BallTriangle, Circles, InfinitySpin, Triangle } from "react-loader-spinner";
+
+
+export function MainLoader() {
+  return (
+    <div className="flex items-center justify-center h-full ">
+      <Triangle
+        height={120}
+        width={120}
+          color="#f59e0b"
+        // color={['#e15b64', '#f47e60', '#f8b26a', '#c94a54', '#ffd08a']} // Amber
+        ariaLabel="circles-loading"
+        wrapperStyle={{}} // No shadow
+        wrapperClass=""
         visible={true}
-        height="200"
-        width="200"
-        color="#f59e0b"
-        ariaLabel="triangle-loading"
-        wrapperStyle={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-       wrapperClass=""
-        style={{
-          borderRadius: "20px", // rounded edges for spinner wrapper
-          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-        }}
-    />)
-
-
+      />
+    </div>
+  );
+}
+export function ComponentLoader() {
+  return (
+    <div className="flex items-center justify-center h-full ">
+      <InfinitySpin
+        height={150}
+        width={150}
+        color="#f59e0b" // Amber
+        ariaLabel="circles-loading"
+        wrapperStyle={{}} // No shadow
+        wrapperClass=""
+        visible={true}
+      />
+    </div>
+  );
 }

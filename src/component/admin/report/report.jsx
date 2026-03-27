@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { User } from "lucide-react";
 import HeroOverlay from "../../overlay";
-import { useOnlineUsers } from "../../hooks/usesocketListenerhook";
+import { useOnlineUsersSocket } from "../../hooks/usesocketListenerhook";
+import { useOnlineUsers } from "../../hooks/useOnlineuser";
 
 /* =========================================================
    STATUS INDICATOR (Perfectly Symmetrical)
@@ -86,11 +87,6 @@ const UserAvatarStatus = ({ user }) => {
             <StatusIndicator status={user.status} />
 
             {/* Tooltip */}
-
-
-
-
-
             <div className="relative group inline-block ">
                 {/* Tooltip */}
                 <div className="absolute -top-20 left-1/2 -translate-x-1/2 mb-3 px-3 py-1.5 
@@ -116,9 +112,6 @@ const UserAvatarStatus = ({ user }) => {
     );
 };
 
-/* =========================================================
-   HELPERS
-========================================================= */
 
 const normalizeOnlineUsers = (rawUsers) => {
     if (!Array.isArray(rawUsers)) return [];
@@ -168,12 +161,10 @@ const pickColorByRole = (role) => {
     }
 };
 
-/* =========================================================
-   MAIN COMPONENT
-========================================================= */
-
 const Admin_Report = () => {
-    const { users } = useOnlineUsers();
+    useOnlineUsersSocket()
+    const { data: users = [], isLoading } = useOnlineUsers();
+    console.log('new users ',users,isLoading)
     const me = useMemo(() => getCurrentSessionUser(), []);
 
     const visibleUsers = useMemo(() => {
@@ -185,7 +176,7 @@ const Admin_Report = () => {
 
         return normalized.filter((u) => {
             const uUsername = u.username || "";
-            const uId = u.id || "";
+            const uId = u.socketId || "";
             if (myUsername && uUsername && myUsername === uUsername) return false;
             if (myId && uId && myId === uId) return false;
             return true;
