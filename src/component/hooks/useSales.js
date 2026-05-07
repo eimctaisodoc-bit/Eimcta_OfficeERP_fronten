@@ -11,7 +11,7 @@ export const useSalesData = () => {
   return useQuery({
     queryKey: ['sales'],
     queryFn: async () => {
-      const { data } = await api.get('/staff/sales');
+      const { data } = await api.get('/staff/sales/getSalesData');
       return data;
     },
 
@@ -19,7 +19,11 @@ export const useSalesData = () => {
 
     retry: false,
   });
+
 };
+
+
+
 // export const useRecruitmentDataForClient = () => {
 //   const user = getSessionUser();
 //   const role = user?.role;

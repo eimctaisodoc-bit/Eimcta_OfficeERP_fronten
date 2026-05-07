@@ -183,17 +183,17 @@ const LeaveManagementForm = ({ onClose }) => {
                     animate={{ scale: 1, opacity: 1 }}
                     className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 text-center border border-slate-200"
                 >
-                    <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-500/30">
-                        <Check size={36} className="text-white" />
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-lg shadow-emerald-500/30">
+                        <Check size={24} className="sm:w-8 sm:h-8 md:w-10 md:h-10 text-white" />
                     </div>
-                    <h2 className="text-2xl font-bold text-slate-800 mb-3">Leave Application Submitted!</h2>
-                    <p className="text-slate-600 mb-6">
+                    <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-slate-800 mb-2 sm:mb-3">Leave Application Submitted!</h2>
+                    <p className="text-xs sm:text-sm md:text-base text-slate-600 mb-4 sm:mb-6">
                         Your leave request has been submitted successfully. You will be notified once it's reviewed.
                     </p>
-                    <div className="space-y-4">
-                        <div className="bg-slate-50 rounded-xl p-4 text-left">
-                            <h3 className="font-semibold text-slate-700 mb-2">Application Details</h3>
-                            <div className="space-y-1 text-sm">
+                    <div className="space-y-3 sm:space-y-4">
+                        <div className="bg-slate-50 rounded-xl p-3 sm:p-4 md:p-5 text-left">
+                            <h3 className="text-sm sm:text-base md:text-lg font-semibold text-slate-700 mb-2">Application Details</h3>
+                            <div className="space-y-1 text-xs sm:text-sm md:text-base">
                                 <p><span className="font-medium">Leave ID:</span> {formData.leaveId}</p>
                                 <p><span className="font-medium">Type:</span> {formData.leaveType}</p>
                                 <p><span className="font-medium">Duration:</span> {formData.totalLeaveDays} days</p>
@@ -230,7 +230,7 @@ const LeaveManagementForm = ({ onClose }) => {
                                 setErrors({});
                                 setTouched({});
                             }}
-                            className="w-full bg-gradient-to-br from-amber-500 to-amber-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 transition-all duration-300"
+                            className="w-full bg-gradient-to-br from-amber-500 to-amber-600 text-white px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 text-xs sm:text-sm md:text-base rounded-xl font-bold shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 transition-all duration-300"
                         >
                             Submit Another Leave Request
                         </button>
@@ -246,26 +246,26 @@ const LeaveManagementForm = ({ onClose }) => {
     <div className="w-full max-w-4xl md:rounded-2xl flex flex-col max-h-[90vh] overflow-hidden relative bg-white">
         
         {/* Header - Now properly sticky at the top of the modal */}
-        <div className="sticky top-0 z-20 bg-gradient-to-br from-amber-500 to-amber-600 p-4 md:p-10 text-white flex-shrink-0">
-            <div className="flex justify-end absolute top-4 right-4 z-30">
+        <div className="sticky top-0 z-20 bg-gradient-to-br from-amber-500 to-amber-600 p-3 sm:p-6 md:p-8 lg:p-10 text-white flex-shrink-0">
+            <div className="flex justify-end absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 z-30">
                 <button 
-                    className="text-white cursor-pointer hover:text-white/60 p-3 rounded-full bg-white/10 hover:rotate-90 transition-all duration-200" 
+                    className="text-white cursor-pointer hover:text-white/60 p-2 sm:p-3 rounded-full bg-white/10 hover:rotate-90 transition-all duration-200" 
                     onClick={onClose}
                 >
-                    <X size={25} />
+                    <X size={18} className="sm:w-6 sm:h-6 md:w-7 md:h-7" />
                 </button>
             </div>
             
-            <div className="flex flex-col lg:flex-row text-center lg:text-start md:text-start items-center gap-3 mb-2 max-w-5xl mx-auto">
-                <div className="p-4 bg-white/20 rounded-lg">
-                    <ClipboardList size={28} className="w-6 h-6 sm:w-12 sm:h-12 md:w-14 md:h-14 text-white" />
+            <div className="flex flex-col lg:flex-row text-center lg:text-start md:text-start items-center gap-2 sm:gap-3 md:gap-4 mb-1 sm:mb-2 max-w-5xl mx-auto">
+                <div className="p-2 sm:p-3 md:p-4 bg-white/20 rounded-lg flex-shrink-0">
+                    <ClipboardList size={20} className="sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-10 lg:h-10 text-white" />
                 </div>
                 <div>
-                    <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl tracking-tight leading-snug" style={{
+                    <h1 className="text-base sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl tracking-tight leading-snug" style={{
                         fontFamily: "'Roboto Slab', serif",
                         fontWeight: 600,
                     }}>Leave Management</h1>
-                    <span className="text-white/90 text-base md:text-lg mt-1" style={{
+                    <span className="text-white/90 text-xs sm:text-sm md:text-base lg:text-lg mt-0.5 sm:mt-1" style={{
                         fontFamily: "'Roboto Slab', serif",
                         fontWeight: 400,
                     }}>
@@ -277,33 +277,33 @@ const LeaveManagementForm = ({ onClose }) => {
 
         {/* Scrollable Content Area */}
         <div className="overflow-y-auto flex-1 custom-scrollbar">
-            <div className="max-w-5xl mx-auto p-4 md:p-8">
+            <div className="max-w-5xl mx-auto p-3 sm:p-4 md:p-6 lg:p-8">
                 <div className="bg-white  overflow-hidden">
                     
                     {/* Form */}
-                    <form onSubmit={handleSubmit} className="p-8">
+                    <form onSubmit={handleSubmit} className="p-4 sm:p-6 md:p-8">
                         {/* Error Summary */}
                         {Object.values(errors).some(error => error) && (
                             <motion.div
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="mb-8 bg-gradient-to-br from-red-50 to-red-50/50 border border-red-200 text-red-700 p-4 rounded-xl font-medium flex items-start gap-3 shadow-sm"
+                                className="mb-6 sm:mb-8 bg-gradient-to-br from-red-50 to-red-50/50 border border-red-200 text-red-700 p-3 sm:p-4 md:p-5 rounded-xl font-medium flex items-start gap-2 sm:gap-3 shadow-sm"
                             >
-                                <AlertCircle size={22} className="flex-shrink-0 mt-0.5" />
+                                <AlertCircle size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0 mt-0.5" />
                                 <div className="flex-1">
-                                    <span className="font-semibold" style={{
+                                    <span className="text-sm sm:text-base font-semibold" style={{
                                         fontFamily: "'Roboto Slab', serif",
                                         fontWeight: 500,
                                     }}>Please fix the following errors:</span>
-                                    <ul className="mt-2 text-sm space-y-1" style={{
+                                    <ul className="mt-2 text-xs sm:text-sm md:text-base space-y-1" style={{
                                         fontFamily: "'Roboto Slab', serif",
                                         fontWeight: 300,
                                     }}>
                                         {Object.entries(errors).map(([field, error]) => (
                                             error && (
                                                 <li key={field} className="flex items-center gap-2">
-                                                    <div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
-                                                    <span>{field === "leaveReason" ? "Reason" : field.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}: {error}</span>
+                                                    <div className="w-1 sm:w-1.5 h-1 sm:h-1.5 bg-red-500 rounded-full flex-shrink-0"></div>
+                                                    <span className="break-words">{field === "leaveReason" ? "Reason" : field.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}: {error}</span>
                                                 </li>
                                             )
                                         ))}
@@ -313,46 +313,46 @@ const LeaveManagementForm = ({ onClose }) => {
                         )}
 
                         {/* Leave Details Card */}
-                        <div className="mb-2 bg-white rounded-2xl p-6">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="p-2 bg-amber-100 rounded-lg">
-                                    <Calendar size={24} className="text-amber-600" />
+                        <div className="mb-2 bg-white rounded-2xl p-4 sm:p-5 md:p-6">
+                            <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                                <div className="p-2 sm:p-2.5 md:p-3 bg-amber-100 rounded-lg flex-shrink-0">
+                                    <Calendar size={18} className="sm:w-5 sm:h-5 md:w-6 md:h-6 text-amber-600" />
                                 </div>
-                                <h2 className="text-2xl font-bold text-slate-800" style={{
+                                <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-800" style={{
                                     fontFamily: "'Roboto Slab', serif",
                                     fontWeight: 600,
                                 }}>Leave Details</h2>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
                                 {/* Leave ID */}
-                                <div className="space-y-2">
-                                    <label className="block text-sm font-semibold text-slate-700">
+                                <div className="space-y-1.5 sm:space-y-2">
+                                    <label className="block text-xs sm:text-sm md:text-base font-semibold text-slate-700">
                                         Leave ID
                                     </label>
                                     <div className="relative">
-                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                            <FileText size={20} />
+                                        <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                            <FileText size={16} className="sm:w-5 sm:h-5 md:w-5 md:h-5" />
                                         </div>
                                         <input
                                             type="text"
                                             name="leaveId"
                                             value={formData.leaveId}
                                             readOnly
-                                            className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-slate-300 bg-slate-50 text-slate-600 font-mono text-sm font-medium"
+                                            className="w-full py-2.5 sm:py-3 md:py-3.5 pl-10 sm:pl-12 pr-3 sm:pr-4 rounded-xl border border-slate-300 bg-slate-50 text-slate-600 font-mono text-xs sm:text-sm font-medium"
                                         />
                                     </div>
                                     <p className="text-xs text-slate-500">Auto-generated leave identifier</p>
                                 </div>
 
                                 {/* Employee ID */}
-                                <div className="space-y-2">
-                                    <label className="block text-sm font-semibold text-slate-700 flex items-center gap-1">
+                                <div className="space-y-1.5 sm:space-y-2">
+                                    <label className="block text-xs sm:text-sm md:text-base font-semibold text-slate-700 flex items-center gap-1">
                                         Employee ID <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
-                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                            <User size={20} />
+                                        <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                            <User size={16} className="sm:w-5 sm:h-5 md:w-5 md:h-5" />
                                         </div>
                                         <input
                                             type="text"
@@ -361,13 +361,13 @@ const LeaveManagementForm = ({ onClose }) => {
                                             onChange={handleChange}
                                             onBlur={handleBlur}
                                             placeholder="Enter employee ID"
-                                            className={`w-full py-3.5 pl-12 pr-4 rounded-xl border outline-none text-sm font-medium bg-white
+                                            className={`w-full py-2.5 sm:py-3 md:py-3.5 pl-10 sm:pl-12 pr-3 sm:pr-4 rounded-xl border outline-none text-xs sm:text-sm font-medium bg-white
                                                 ${errors.employeeId && touched.employeeId ? 'border-red-500 bg-red-50/50' : 'border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-100'}
                                             `}
                                         />
                                         {errors.employeeId && touched.employeeId && (
-                                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                                <AlertCircle size={16} className="text-red-500" />
+                                            <div className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2">
+                                                <AlertCircle size={14} className="sm:w-4 sm:h-4 md:w-5 md:h-5 text-red-500" />
                                             </div>
                                         )}
                                     </div>
@@ -380,8 +380,8 @@ const LeaveManagementForm = ({ onClose }) => {
                                 </div>
 
                                 {/* Leave Type */}
-                                <div className="space-y-2">
-                                    <label className="block text-sm font-semibold text-slate-700 flex items-center gap-1">
+                                <div className="space-y-1.5 sm:space-y-2">
+                                    <label className="block text-xs sm:text-sm md:text-base font-semibold text-slate-700 flex items-center gap-1">
                                         Leave Type <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
@@ -390,7 +390,7 @@ const LeaveManagementForm = ({ onClose }) => {
                                             value={formData.leaveType}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
-                                            className={`w-full px-4 py-3.5 rounded-xl border bg-white outline-none text-sm font-medium appearance-none
+                                            className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 md:py-3.5 rounded-xl border bg-white outline-none text-xs sm:text-sm font-medium appearance-none
                                                 ${errors.leaveType && touched.leaveType ? 'border-red-500 bg-red-50/50' : 'border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-100'}
                                             `}
                                         >
@@ -400,12 +400,12 @@ const LeaveManagementForm = ({ onClose }) => {
                                             <option value="Casual">Casual Leave</option>
                                             <option value="Unpaid">Unpaid Leave</option>
                                         </select>
-                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                                            <ChevronDown size={20} />
+                                        <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                                            <ChevronDown size={16} className="sm:w-5 sm:h-5 md:w-5 md:h-5" />
                                         </div>
                                         {errors.leaveType && touched.leaveType && (
-                                            <div className="absolute right-10 top-1/2 -translate-y-1/2">
-                                                <AlertCircle size={16} className="text-red-500" />
+                                            <div className="absolute right-9 sm:right-10 top-1/2 -translate-y-1/2">
+                                                <AlertCircle size={14} className="sm:w-4 sm:h-4 md:w-5 md:h-5 text-red-500" />
                                             </div>
                                         )}
                                     </div>
@@ -418,15 +418,15 @@ const LeaveManagementForm = ({ onClose }) => {
                                 </div>
 
                                 {/* Date Range */}
-                                <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
                                     {/* Start Date */}
-                                    <div className="space-y-2">
-                                        <label className="block text-sm font-semibold text-slate-700 flex items-center gap-1">
+                                    <div className="space-y-1.5 sm:space-y-2">
+                                        <label className="block text-xs sm:text-sm md:text-base font-semibold text-slate-700 flex items-center gap-1">
                                             Start Date <span className="text-red-500">*</span>
                                         </label>
                                         <div className="relative">
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                                <Calendar size={20} />
+                                            <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                                <Calendar size={16} className="sm:w-5 sm:h-5 md:w-5 md:h-5" />
                                             </div>
                                             <input
                                                 type="date"
@@ -434,7 +434,7 @@ const LeaveManagementForm = ({ onClose }) => {
                                                 value={formData.leaveStartDate}
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
-                                                className={`w-full py-3.5 pl-12 pr-4 rounded-xl border outline-none text-sm font-medium bg-white
+                                                className={`w-full py-2.5 sm:py-3 md:py-3.5 pl-10 sm:pl-12 pr-3 sm:pr-4 rounded-xl border outline-none text-xs sm:text-sm font-medium bg-white
                                                     ${errors.leaveStartDate && touched.leaveStartDate ? 'border-red-500 bg-red-50/50' : 'border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-100'}
                                                 `}
                                             />
@@ -448,13 +448,13 @@ const LeaveManagementForm = ({ onClose }) => {
                                     </div>
 
                                     {/* End Date */}
-                                    <div className="space-y-2">
-                                        <label className="block text-sm font-semibold text-slate-700 flex items-center gap-1">
+                                    <div className="space-y-1.5 sm:space-y-2">
+                                        <label className="block text-xs sm:text-sm md:text-base font-semibold text-slate-700 flex items-center gap-1">
                                             End Date <span className="text-red-500">*</span>
                                         </label>
                                         <div className="relative">
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                                <Calendar size={20} />
+                                            <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                                <Calendar size={16} className="sm:w-5 sm:h-5 md:w-5 md:h-5" />
                                             </div>
                                             <input
                                                 type="date"
@@ -463,7 +463,7 @@ const LeaveManagementForm = ({ onClose }) => {
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
                                                 min={formData.leaveStartDate}
-                                                className={`w-full py-3.5 pl-12 pr-4 rounded-xl border outline-none text-sm font-medium bg-white
+                                                className={`w-full py-2.5 sm:py-3 md:py-3.5 pl-10 sm:pl-12 pr-3 sm:pr-4 rounded-xl border outline-none text-xs sm:text-sm font-medium bg-white
                                                     ${errors.leaveEndDate && touched.leaveEndDate ? 'border-red-500 bg-red-50/50' : 'border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-100'}
                                                 `}
                                             />
@@ -477,13 +477,13 @@ const LeaveManagementForm = ({ onClose }) => {
                                     </div>
 
                                     {/* Total Leave Days */}
-                                    <div className="space-y-2 border-amber-200">
-                                        <label className="block text-sm font-semibold text-slate-700">
+                                    <div className="space-y-1.5 sm:space-y-2 border-amber-200">
+                                        <label className="block text-xs sm:text-sm md:text-base font-semibold text-slate-700">
                                             Total Leave Days
                                         </label>
                                         <div className="relative">
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                                <Clock size={20} />
+                                            <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                                <Clock size={16} className="sm:w-5 sm:h-5 md:w-5 md:h-5" />
                                             </div>
                                             <input
                                                 type="number"
@@ -491,7 +491,7 @@ const LeaveManagementForm = ({ onClose }) => {
                                                 value={formData.totalLeaveDays}
                                                 readOnly
                                                 disabled
-                                                className="w-full py-3.5 pl-12 pr-4 rounded-xl border bg-slate-50 text-slate-600 font-semibold text-lg"
+                                                className="w-full py-2.5 sm:py-3 md:py-3.5 pl-10 sm:pl-12 pr-3 sm:pr-4 rounded-xl border bg-slate-50 text-slate-600 font-semibold text-sm sm:text-base md:text-lg"
                                             />
                                         </div>
                                         <p className="text-xs text-slate-500">Calculated automatically</p>
@@ -499,8 +499,8 @@ const LeaveManagementForm = ({ onClose }) => {
                                 </div>
 
                                 {/* Leave Reason */}
-                                <div className="md:col-span-2 space-y-2">
-                                    <label className="block text-sm font-semibold text-slate-700 flex items-center gap-1">
+                                <div className="md:col-span-2 space-y-1.5 sm:space-y-2">
+                                    <label className="block text-xs sm:text-sm md:text-base font-semibold text-slate-700 flex items-center gap-1">
                                         Reason for Leave <span className="text-red-500">*</span>
                                     </label>
                                     <textarea
@@ -510,25 +510,25 @@ const LeaveManagementForm = ({ onClose }) => {
                                         onBlur={handleBlur}
                                         placeholder="Please provide a detailed reason for your leave request..."
                                         rows={3}
-                                        className={`w-full p-4 rounded-xl border outline-none text-sm font-medium bg-white resize-none
+                                        className={`w-full p-3 sm:p-4 rounded-xl border outline-none text-xs sm:text-sm font-medium bg-white resize-none
                                             ${errors.leaveReason && touched.leaveReason ? 'border-red-500 bg-red-50/50' : 'border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-100'}
                                         `}
                                     />
-                                    <div className="flex justify-between items-center">
+                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                                         {errors.leaveReason && touched.leaveReason && (
                                             <p className="text-xs text-red-600 font-medium flex items-center gap-1">
                                                 <AlertCircle size={12} />
                                                 {errors.leaveReason}
                                             </p>
                                         )}
-                                        <p className="text-xs text-slate-500 ml-auto">
+                                        <p className="text-xs text-slate-500 sm:ml-auto">
                                             {formData.leaveReason.length}/500 characters
                                         </p>
                                     </div>
                                 </div>
 
                                 {/* Attachment */}
-                                <div className="md:col-span-2">
+                                <div className="md:col-span-2 space-y-1.5 sm:space-y-2">
                                     <FileUploadField
                                         label="Supporting Document (Optional)"
                                         name="attachment"
@@ -540,26 +540,26 @@ const LeaveManagementForm = ({ onClose }) => {
                         </div>
 
                         {/* Approval Details Card */}
-                        <div className="mb-10 bg-gradient-to-br from-amber-50/50 to-amber-50/30 border border-amber-100 rounded-2xl p-6">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="p-2 bg-amber-100 rounded-lg">
-                                    <CheckCircle2 size={24} className="text-amber-600" />
+                        <div className="mb-8 sm:mb-10 bg-gradient-to-br from-amber-50/50 to-amber-50/30 border border-amber-100 rounded-2xl p-4 sm:p-5 md:p-6">
+                            <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                                <div className="p-2 sm:p-2.5 md:p-3 bg-amber-100 rounded-lg flex-shrink-0">
+                                    <CheckCircle2 size={18} className="sm:w-5 sm:h-5 md:w-6 md:h-6 text-amber-600" />
                                 </div>
-                                <h2 className="text-2xl font-bold text-slate-800" style={{
+                                <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-800" style={{
                                     fontFamily: "'Roboto Slab', serif",
                                     fontWeight: 600,
                                 }}>Approval Details</h2>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
                                 {/* Approved By - Now always required */}
-                                <div className="space-y-2">
-                                    <label className="block text-sm font-semibold text-slate-700 flex items-center gap-1">
+                                <div className="space-y-1.5 sm:space-y-2">
+                                    <label className="block text-xs sm:text-sm md:text-base font-semibold text-slate-700 flex items-center gap-1">
                                         Approved By <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
-                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                            <Briefcase size={20} />
+                                        <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                            <Briefcase size={16} className="sm:w-5 sm:h-5 md:w-5 md:h-5" />
                                         </div>
                                         <input
                                             type="text"
@@ -568,13 +568,13 @@ const LeaveManagementForm = ({ onClose }) => {
                                             onChange={handleChange}
                                             onBlur={handleBlur}
                                             placeholder="Enter approver name"
-                                            className={`w-full py-3.5 pl-12 pr-4 rounded-xl border outline-none text-sm font-medium bg-white
+                                            className={`w-full py-2.5 sm:py-3 md:py-3.5 pl-10 sm:pl-12 pr-3 sm:pr-4 rounded-xl border outline-none text-xs sm:text-sm font-medium bg-white
                                                 ${errors.approvedBy && touched.approvedBy ? 'border-red-500 bg-red-50/50' : 'border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-100'}
                                             `}
                                         />
                                         {errors.approvedBy && touched.approvedBy && (
-                                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                                <AlertCircle size={16} className="text-red-500" />
+                                            <div className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2">
+                                                <AlertCircle size={14} className="sm:w-4 sm:h-4 md:w-5 md:h-5 text-red-500" />
                                             </div>
                                         )}
                                     </div>
@@ -587,13 +587,13 @@ const LeaveManagementForm = ({ onClose }) => {
                                 </div>
 
                                 {/* Approval Date - Now always required */}
-                                <div className="space-y-2">
-                                    <label className="block text-sm font-semibold text-slate-700 flex items-center gap-1">
+                                <div className="space-y-1.5 sm:space-y-2">
+                                    <label className="block text-xs sm:text-sm md:text-base font-semibold text-slate-700 flex items-center gap-1">
                                         Approval Date <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
-                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                            <Calendar size={20} />
+                                        <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                            <Calendar size={16} className="sm:w-5 sm:h-5 md:w-5 md:h-5" />
                                         </div>
                                         <input
                                             type="date"
@@ -601,7 +601,7 @@ const LeaveManagementForm = ({ onClose }) => {
                                             value={formData.approvalDate}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
-                                            className={`w-full py-3.5 pl-12 pr-4 rounded-xl border outline-none text-sm font-medium bg-white
+                                            className={`w-full py-2.5 sm:py-3 md:py-3.5 pl-10 sm:pl-12 pr-3 sm:pr-4 rounded-xl border outline-none text-xs sm:text-sm font-medium bg-white
                                                 ${errors.approvalDate && touched.approvalDate ? 'border-red-500 bg-red-50/50' : 'border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-100'}
                                             `}
                                         />
@@ -624,32 +624,32 @@ const LeaveManagementForm = ({ onClose }) => {
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="w-full md:w-auto bg-gradient-to-br from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-12 py-4 rounded-xl font-bold shadow-lg shadow-amber-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/40 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3 text-lg"
+                                className="w-full md:w-auto bg-gradient-to-br from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-6 sm:px-10 md:px-12 py-2.5 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg rounded-xl font-bold shadow-lg shadow-amber-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/40 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 sm:gap-3"
                             >
                                 {isSubmitting ? (
                                     <>
-                                        <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                        Submitting Leave Request...
+                                        <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                        <span className="text-xs sm:text-sm md:text-base">Submitting Leave Request...</span>
                                     </>
                                 ) : (
                                     <>
-                                        <ClipboardList size={22} />
-                                        Submit Leave Application
+                                        <ClipboardList size={18} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                                        <span className="text-xs sm:text-sm md:text-base">Submit Leave Application</span>
                                     </>
                                 )}
                             </button>
                         </div>
 
                         {/* Quick Tips */}
-                        <div className="mt-10 pt-8 border-t border-slate-100">
-                            <div className="flex items-start gap-3 p-4 bg-blue-50/50 rounded-xl border border-blue-100">
-                                <AlertTriangle size={20} className="text-amber-500 mt-1 flex-shrink-0" />
-                                <div className="space-y-1">
-                                    <h3 className="font-semibold text-slate-700" style={{
+                        <div className="mt-6 sm:mt-8 md:mt-10 pt-4 sm:pt-6 md:pt-8 border-t border-slate-100">
+                            <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 md:p-5 bg-blue-50/50 rounded-xl border border-blue-100">
+                                <AlertTriangle size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6 text-amber-500 mt-1 flex-shrink-0" />
+                                <div className="space-y-1 sm:space-y-1.5">
+                                    <h3 className="text-sm sm:text-base md:text-lg font-semibold text-slate-700" style={{
                                         fontFamily: "'Roboto Slab', serif",
                                         fontWeight: 600,
                                     }}>Important Notes</h3>
-                                    <ul className="text-sm text-slate-700 space-y-1" style={{
+                                    <ul className="text-xs sm:text-sm md:text-base text-slate-700 space-y-1 sm:space-y-1.5" style={{
                                         fontFamily: "'Roboto Slab', serif",
                                         fontWeight: 400,
                                     }}>
@@ -672,19 +672,19 @@ const LeaveManagementForm = ({ onClose }) => {
 };
 
 const FileUploadField = ({ label, name, file, onChange }) => (
-    <div className={`p-6 border-2 border-dashed rounded-2xl text-center transition-all cursor-pointer group
+    <div className={`p-4 sm:p-5 md:p-6 border-2 border-dashed rounded-2xl text-center transition-all cursor-pointer group
         ${file
             ? 'bg-gradient-to-br from-emerald-50/80 to-emerald-50/50 border-emerald-300'
             : 'bg-white border-slate-300 hover:border-amber-400 hover:bg-amber-50/30'
         }`}
     >
         <label className="cursor-pointer block">
-            <div className={`w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center transition-all ${file ? 'bg-emerald-100' : 'bg-slate-100 group-hover:bg-amber-100'
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full mx-auto mb-2 sm:mb-3 md:mb-4 flex items-center justify-center transition-all ${file ? 'bg-emerald-100' : 'bg-slate-100 group-hover:bg-amber-100'
                 }`}>
-                <UploadCloud className={`${file ? 'text-emerald-600' : 'text-slate-400 group-hover:text-amber-500'}`} size={24} />
+                <UploadCloud className={`text-sm sm:text-base md:text-lg ${file ? 'text-emerald-600' : 'text-slate-400 group-hover:text-amber-500'}`} size={20} />
             </div>
-            <p className="text-base font-bold text-slate-800 mb-1">{label}</p>
-            <p className="text-sm text-slate-500 mb-4">Max file size: 5MB (PDF, JPG, PNG)</p>
+            <p className="text-sm sm:text-base md:text-lg font-bold text-slate-800 mb-1">{label}</p>
+            <p className="text-xs sm:text-sm text-slate-500 mb-3 sm:mb-4">Max file size: 5MB (PDF, JPG, PNG)</p>
             <input
                 type="file"
                 name={name}
@@ -693,9 +693,9 @@ const FileUploadField = ({ label, name, file, onChange }) => (
                 className="hidden"
             />
             {file && (
-                <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-lg">
-                    <Check size={16} />
-                    <span className="text-sm font-medium truncate max-w-xs">{file.name}</span>
+                <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-emerald-100 text-emerald-700 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg">
+                    <Check size={14} className="sm:w-4 sm:h-4" />
+                    <span className="font-medium truncate max-w-xs">{file.name}</span>
                 </div>
             )}
         </label>

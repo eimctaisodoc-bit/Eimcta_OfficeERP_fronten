@@ -23,12 +23,14 @@ import { Admin_sales } from './component/admin/sales/Admin_sales';
 import { DprForm } from './component/staff/task/dprFrom';
 import { I_Icon } from './component/i_icon';
 import { Noti } from './component/staff/notification/notification';
-import { Folder_ } from './component/staff/dms/folder';
+import {  S_Folder_ } from './component/staff/dms/folder';
 import { S_A_Setting } from './component/super/setting/setting';
 import { useAuth } from './component/hooks/useAuth';
 import { MainLoader } from './component/loader';
 import Chat from './component/admin/inbox/chat';
 import { Su_Folder_ } from './component/super/dms/folder_';
+import { A_Folder_ } from './component/admin/DMS/folder';
+import { C_Folder_ } from './component/client/dms/folder';
 // import { Folder } from 'lucide-react';
 
 function App() {
@@ -69,7 +71,7 @@ function App() {
               <Route path="settings" element={<A_Setting />} />
               <Route path="inbox" element={<Chat />} />
               <Route path="sales" element={<Admin_sales />} />
-              <Route path="dms" element={<Folder_ />} />
+              <Route path="dms" element={<A_Folder_ />} />
               {/* <Route path="settings" element="hi" /> */}
               <Route path="users" element={<Data_Table />} />
             </Route>
@@ -83,6 +85,7 @@ function App() {
               <Route path="tasks" element={<Staff_task_page />} />
               <Route path="sales" element={<SalesPipeline />} />
               <Route path="users" element={<Data_Table />} />
+              <Route path="dms" element={<S_Folder_ />} />
               <Route path="settings" element={<S_Setting />} />
             </Route>
           </Route>
@@ -91,6 +94,7 @@ function App() {
               <Route index path="report" element={<Admin_Report />} />
               {/* <Route path="hr" element={<Client_Hr_Page />} /> */}
               <Route path="users" element={<Data_Table />} />
+              <Route path="dms" element={<C_Folder_ />} />
               <Route path="settings" element={<S_Setting />} />
             </Route>
           </Route>

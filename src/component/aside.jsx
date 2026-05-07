@@ -9,13 +9,13 @@ import { MainLoader } from "./loader.jsx";
 
 const Asidebar = ({ loading, isOpen, setIsOpen }) => {
   const { isAuthLoading, logout, useMe: { data: { user: { decoded, token } = {} } = {}, isLoading, error } } = useAuth();
-console.log('new user ',decoded)
+// console.log('new user ',decoded)
 const role=sessionStorage.getItem('user')
-console.log('users',JSON.parse(role))
+// console.log('users',JSON.parse(role))
 // JSON.parse
   const location = useLocation();
   const navigate = useNavigate();
-  console.log(isLoading, error, isAuthLoading)
+  // console.log(isLoading, error, isAuthLoading)
   const updatedMenus = menus[JSON.parse(role)?.role] || [];
 
   const handleLogOut = async () => {
@@ -28,7 +28,7 @@ console.log('users',JSON.parse(role))
       navigate('/', { replace: true });
     } catch (error) {
       alert('error', error.response);
-      console.log('error logout', error);
+      // console.log('error logout', error);
     }
   };
 

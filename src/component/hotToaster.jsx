@@ -1,23 +1,57 @@
 // src/component/hotToaster.jsx
 import toast from "react-hot-toast";
 import React from "react";
+import { CheckCircle } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 
 // ✅ Success Toast
-export const SuccessNotify = (message) => {
-  toast.success(message || "Login successful", {
-    duration: 5000,
+
+export const SuccessNotify = (message = "Success!") => {
+  toast.success(message, {
+    duration: 2500,
+    position: "top-right",
+
     style: {
-      border: "1px solid #713200",
-      padding: "16px",
-      color: "#713200",
+      minWidth: "280px",
+      padding: "14px 16px",
+      borderRadius: "14px",
+      border: "1px solid #bbf7d0",
+      background: "linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%)",
+      color: "#166534",
+      fontSize: "14px",
+      fontWeight: "600",
+      boxShadow:
+        "0 10px 25px rgba(22, 163, 74, 0.18), 0 4px 10px rgba(0,0,0,0.06)",
     },
+
     iconTheme: {
-      primary: "#713200",
-      secondary: "#FFFAEE",
+      primary: "#16a34a",
+      secondary: "#dcfce7",
+    },
+  });};
+export const waitingNotify = (message = "Processing...") => {
+  toast.loading(message, {
+    id: `warning-${message}`,
+    duration: 2000,
+    position: "top-right",
+    style: {
+      minWidth: "280px",
+      padding: "14px 16px",
+      borderRadius: "14px",
+      border: "1px solid #fbbf24",
+      background: "linear-gradient(135deg, #fffbeb 0%, #ffffff 100%)",
+      color: "#b45309",
+      fontSize: "14px",
+      fontWeight: "600",
+      boxShadow:"0 10px 25px rgba(180, 83, 9, 0.18), 0 4px 10px rgba(0,0,0,0.06)",
+
+    },  
+    iconTheme: {
+      primary: "#b45309",
+      secondary: "#fef3c7",
     },
   });
-};
-
+}
 // ✅ Error Toast
 export const ErrorNotify = (message) => {
   toast.error(message || "This didn't work or Invalid.", {
@@ -74,7 +108,7 @@ export const InputNotify = (
     const resDate = date.setHours(10, 30, 0);
     const resfnDate = formatDateTime(resDate);
     const nayadate = new Date().toLocaleTimeString();
-    console.log('start====Time', resfnDate,start,'----->',nayadate);
+    console.log('start====Time', resfnDate, start, '----->', nayadate);
     const end = slotInfo?.end;
 
     const cancel = (t) => {
